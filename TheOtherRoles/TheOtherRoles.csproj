@@ -29,7 +29,7 @@
 
     <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
         <Message Text="Second occurrence" />
-      <Copy SourceFiles="$(ProjectDir)\bin\$(Configuration)\netstandard2.1\TheOtherRolesGM.dll" DestinationFolder="$(AmongUsLatest)/BepInEx/plugins/" />
+      <Copy SourceFiles="$(ProjectDir)\bin\$(Configuration)\netstandard2.1\TheOtherRolesGMk.dll" DestinationFolder="$(AmongUsLatest)/BepInEx/plugins/" />
     </Target>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

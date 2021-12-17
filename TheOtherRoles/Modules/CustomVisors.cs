@@ -42,13 +42,13 @@ namespace TheOtherRoles.Modules
             Texture2D texture = fromDisk ? Helpers.loadTextureFromDisk(path) : Helpers.loadTextureFromResources(path);
             if (texture == null)
             {
-                System.Console.WriteLine("Texture Error:"+path+"\n");
+//                System.Console.WriteLine("Texture Error:"+path+"\n");
                 return null;
             }
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.53f, 0.575f), texture.width * 0.5f);
             if (sprite == null)
             {
-                System.Console.WriteLine("Sprite Error\n");
+//                System.Console.WriteLine("Sprite Error\n");
                 return null;
             }
             texture.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
@@ -79,9 +79,9 @@ namespace TheOtherRoles.Modules
             VisorData visor = new VisorData();
             System.Console.WriteLine(cv.Idle + "\n");
             var ext = Path.GetExtension(cv.Idle);
-            System.Console.WriteLine(ext + "\n");
+//            System.Console.WriteLine(ext + "\n");
             var basename = cv.Idle.Substring(0, cv.Idle.Length - ext.Length);
-            System.Console.WriteLine(basename + "\n");
+//            System.Console.WriteLine(basename + "\n");
 
             visor.IdleFrame = CreateVisorSprite(cv.Idle, fromDisk);
             int order;
@@ -99,7 +99,7 @@ namespace TheOtherRoles.Modules
             }
 
             var IdleLeft = basename  + "_Left" + ext;
-            System.Console.WriteLine(IdleLeft + "\n");
+//            System.Console.WriteLine(IdleLeft + "\n");
             if (existImage(IdleLeft, fromDisk))
             {
                 visor.LeftIdleFrame = CreateVisorSprite(IdleLeft, fromDisk);
@@ -193,6 +193,13 @@ namespace TheOtherRoles.Modules
                     FromDisk=false
                 },
                 new customVisor(){
+                    Idle ="TheOtherRoles.Resources.VisorTest.VisorAngry.png",
+//                    Floor="TheOtherRoles.Resources.VisorTest.VisorTemplate.png",
+                    Name ="おこ！",
+                    Id   ="VisorAngry",
+                    FromDisk=false
+                },
+                new customVisor(){
                     Idle ="TheOtherRoles.Resources.VisorTest.VisorTemplate.png",
 //                    Floor="TheOtherRoles.Resources.VisorTest.VisorTemplate.png",
                     Name ="テンプレ",
@@ -240,7 +247,7 @@ namespace TheOtherRoles.Modules
                         {
                             var cv = visorList[0];
                             visorList.RemoveAt(0);
-                            UnityEngine.Debug.Log("visor Add:" + cv.ToString() + "\n");
+//                            UnityEngine.Debug.Log("visor Add:" + cv.ToString() + "\n");
                             __instance.AllVisors.Add(CreateVisorData(cv,cv.FromDisk));
                         }
                     }
@@ -248,7 +255,10 @@ namespace TheOtherRoles.Modules
                 catch (System.Exception e)
                 {
                     if (!LOADED)
-                        UnityEngine.Debug.Log("Unable to add Custom Hats\n" + e);
+                    {
+//                        UnityEngine.Debug.Log("Unable to add Custom Hats\n" + e);
+
+                    }
                 }
                 LOADED = true;
             }

@@ -158,6 +158,13 @@ namespace TheOtherRoles.Modules
                     FromDisk=false
                 },
                 new customVisor(){
+                    Idle ="TheOtherRoles.Resources.VisorTest.VisorZaku.png",
+//                    Floor="TheOtherRoles.Resources.VisorTest.visorGundam1.png",
+                    Name ="ZK",
+                    Id   ="visorZaku",
+                    FromDisk=false
+                },
+                new customVisor(){
                     Idle ="TheOtherRoles.Resources.VisorTest.VisorVR.png",
 //                    Floor="TheOtherRoles.Resources.VisorTest.VisorVR.png",
                     Name ="VRゴーグル",
@@ -200,12 +207,28 @@ namespace TheOtherRoles.Modules
                     FromDisk=false
                 },
                 new customVisor(){
+                    Idle ="TheOtherRoles.Resources.VisorTest.VisorHeart.png",
+//                    Floor="TheOtherRoles.Resources.VisorTest.VisorTemplate.png",
+                    Name ="はぁと♪",
+                    Id   ="VisorHeart",
+                    FromDisk=false
+                },
+                new customVisor(){
+                    Idle ="TheOtherRoles.Resources.VisorTest.VisorMouth.png",
+//                    Floor="TheOtherRoles.Resources.VisorTest.VisorTemplate.png",
+                    Name ="ビッグマウス",
+                    Id   ="VisorMouth",
+                    FromDisk=false
+                },
+/*
+                new customVisor(){
                     Idle ="TheOtherRoles.Resources.VisorTest.VisorTemplate.png",
 //                    Floor="TheOtherRoles.Resources.VisorTest.VisorTemplate.png",
                     Name ="テンプレ",
                     Id   ="VisorTemplate",
                     FromDisk=false
                 },
+//*/
             };
             string filePath = Path.Combine(Path.GetDirectoryName(Application.dataPath), "VisorTest");
             if (Directory.Exists(filePath))

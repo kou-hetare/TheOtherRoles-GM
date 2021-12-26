@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static TheOtherRoles.TheOtherRoles;
+using static TheOtherRoles.TheOtherRolesGM;
 using static TheOtherRoles.GameHistory;
 using TheOtherRoles.Objects;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace TheOtherRoles.Patches
     {
         // Helpers
 
-        static PlayerControl setTarget(bool onlyCrewmates = false, bool targetPlayersInVents = false, List<PlayerControl> untargetablePlayers = null, PlayerControl targetingPlayer = null)
+        public static PlayerControl setTarget(bool onlyCrewmates = false, bool targetPlayersInVents = false, List<PlayerControl> untargetablePlayers = null, PlayerControl targetingPlayer = null)
         {
             PlayerControl result = null;
             float num = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
@@ -26,14 +27,24 @@ namespace TheOtherRoles.Patches
             if (targetingPlayer.Data.IsDead || targetingPlayer.inVent) return result;
             if (targetingPlayer.isGM()) return result;
 
+            if (untargetablePlayers == null)
+            {
+                untargetablePlayers = new List<PlayerControl>();
+            }
+
             // GM is untargetable by anything
             if (GM.gm != null)
             {
-                if (untargetablePlayers == null)
-                {
-                    untargetablePlayers = new List<PlayerControl>();
-                }
                 untargetablePlayers.Add(GM.gm);
+            }
+
+            // Can't target stealthed ninjas if setting on
+            if (!Ninja.canBeTargeted)
+            {
+                foreach (Ninja n in Ninja.players)
+                {
+                    if (n.stealthed) untargetablePlayers.Add(n.player);
+                }
             }
 
             Vector2 truePosition = targetingPlayer.GetTruePosition();
@@ -44,7 +55,7 @@ namespace TheOtherRoles.Patches
                 if (!playerInfo.Disconnected && playerInfo.PlayerId != targetingPlayer.PlayerId && !playerInfo.IsDead && (!onlyCrewmates || !playerInfo.Role.IsImpostor))
                 {
                     PlayerControl @object = playerInfo.Object;
-                    if (untargetablePlayers != null && untargetablePlayers.Any(x => x == @object))
+                    if (untargetablePlayers.Any(x => x == @object))
                     {
                         // if that player is not targetable: skip check
                         continue;
@@ -65,7 +76,7 @@ namespace TheOtherRoles.Patches
             return result;
         }
 
-        static void setPlayerOutline(PlayerControl target, Color color)
+        public static void setPlayerOutline(PlayerControl target, Color color)
         {
             if (target == null || target.myRend == null) return;
 
@@ -159,26 +170,29 @@ namespace TheOtherRoles.Patches
             if (!Medic.usedShield) setPlayerOutline(Medic.currentTarget, Medic.shieldedColor);
         }
 
-        static void shifterSetTarget()
+        static void shifterUpdate()
         {
             if (Shifter.shifter == null || Shifter.shifter != PlayerControl.LocalPlayer) return;
-            Shifter.currentTarget = setTarget();
+
+            List<PlayerControl> blockShift = null;
+            if (Shifter.isNeutral && !Shifter.shiftPastShifters)
+            {
+                blockShift = new List<PlayerControl>();
+                foreach (var playerId in Shifter.pastShifters)
+                {
+                    blockShift.Add(Helpers.playerById((byte)playerId));
+                }
+            }
+
+            Shifter.currentTarget = setTarget(untargetablePlayers: blockShift);
             if (Shifter.futureShift == null) setPlayerOutline(Shifter.currentTarget, Shifter.color);
         }
-
 
         static void morphlingSetTarget()
         {
             if (Morphling.morphling == null || Morphling.morphling != PlayerControl.LocalPlayer) return;
             Morphling.currentTarget = setTarget();
             setPlayerOutline(Morphling.currentTarget, Morphling.color);
-        }
-
-        static void sheriffSetTarget()
-        {
-            if (Sheriff.sheriff == null || Sheriff.sheriff != PlayerControl.LocalPlayer || Sheriff.numShots <= 0) return;
-            Sheriff.currentTarget = setTarget();
-            setPlayerOutline(Sheriff.currentTarget, Sheriff.color);
         }
 
         static void trackerSetTarget()
@@ -500,13 +514,19 @@ namespace TheOtherRoles.Patches
                     if (meetingInfo == null && playerVoteArea != null)
                     {
                         meetingInfo = UnityEngine.Object.Instantiate(playerVoteArea.NameText, playerVoteArea.NameText.transform.parent);
-                        meetingInfo.transform.localPosition += Vector3.down * 0.20f;
-                        meetingInfo.fontSize *= 0.63f;
+                        meetingInfo.transform.localPosition += Vector3.down * 0.10f;
+                        meetingInfo.fontSize *= 0.60f;
                         meetingInfo.gameObject.name = "Info";
                     }
 
+                    // Set player name higher to align in middle
+                    if (meetingInfo != null && playerVoteArea != null) {
+                        var playerName = playerVoteArea.NameText;
+                        playerName.transform.localPosition = new Vector3(0.3384f, (0.0311f + 0.0683f), -0.1f);    
+                    }
+
                     var (tasksCompleted, tasksTotal) = TasksHandler.taskInfo(p.Data);
-                    string roleNames = RoleInfo.GetRolesString(p, true);
+                    string roleNames = RoleInfo.GetRolesString(p, true, new RoleId[] { RoleId.Lovers });
 
                     var completedStr = commsActive ? "?" : tasksCompleted.ToString();
                     string taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
@@ -859,6 +879,16 @@ namespace TheOtherRoles.Patches
             }
         }
 
+        public static void hackerUpdate() {
+            if (Hacker.hacker == null || PlayerControl.LocalPlayer != Hacker.hacker || Hacker.hacker.Data.IsDead) return;
+            var (playerCompleted, _) = TasksHandler.taskInfo(Hacker.hacker.Data);
+            if (playerCompleted == Hacker.rechargedTasks) {
+                Hacker.rechargedTasks += Hacker.rechargeTasksNumber;
+                if (Hacker.toolsNumber > Hacker.chargesVitals) Hacker.chargesVitals++;
+                if (Hacker.toolsNumber > Hacker.chargesAdminTable) Hacker.chargesAdminTable++;
+            }
+        }
+
         static void pursuerSetTarget()
         {
             if (Pursuer.pursuer == null || Pursuer.pursuer != PlayerControl.LocalPlayer) return;
@@ -907,9 +937,7 @@ namespace TheOtherRoles.Patches
                 // Medic
                 medicSetTarget();
                 // Shifter
-                shifterSetTarget();
-                // Sheriff
-                sheriffSetTarget();
+                shifterUpdate();
                 // Detective
                 detectiveUpdateFootPrints();
                 // Tracker
@@ -955,7 +983,10 @@ namespace TheOtherRoles.Patches
                 pursuerSetTarget();
                 // Witch
                 witchSetTarget();
+                hackerUpdate();
             }
+
+            TheOtherRolesGM.FixedUpdate();
         }
     }
 
@@ -1082,18 +1113,7 @@ namespace TheOtherRoles.Patches
                 target.clearAllTasks();
 
             // Lover suicide trigger on murder
-            if ((Lovers.lover1 != null && target == Lovers.lover1) || (Lovers.lover2 != null && target == Lovers.lover2))
-            {
-                if (Lovers.separateTeam && Lovers.tasksCount)
-                    target.clearAllTasks();
-
-                PlayerControl otherLover = target.getPartner();
-                if (otherLover != null && !otherLover.Data.IsDead && Lovers.bothDie)
-                {
-                    otherLover.MurderPlayer(otherLover);
-                    finalStatuses[otherLover.PlayerId] = FinalStatus.Suicide;
-                }
-            }
+            Lovers.killLovers(target);
 
             // Sidekick promotion trigger on murder
             if (Sidekick.promotesToJackal && Sidekick.sidekick != null && !Sidekick.sidekick.Data.IsDead && target == Jackal.jackal && Jackal.jackal == PlayerControl.LocalPlayer)
@@ -1198,11 +1218,14 @@ namespace TheOtherRoles.Patches
                     if (p == 1f && renderer != null) renderer.enabled = false;
                 })));
             }
+
+            __instance.OnKill();
+            target.OnDeath();
         }
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetKillTimer))]
-    class PlayerControlSetCoolDownPatch
+    static class PlayerControlSetCoolDownPatch
     {
         public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] float time)
         {
@@ -1211,10 +1234,19 @@ namespace TheOtherRoles.Patches
             float addition = 0f;
             if (Mini.mini != null && PlayerControl.LocalPlayer == Mini.mini && Mini.mini.Data.Role.IsImpostor) multiplier = Mini.isGrownUp() ? 0.66f : 2f;
             if (BountyHunter.bountyHunter != null && PlayerControl.LocalPlayer == BountyHunter.bountyHunter) addition = BountyHunter.punishmentTime;
+            if (PlayerControl.LocalPlayer.isRole(RoleId.Ninja) && Ninja.isPenalized(PlayerControl.LocalPlayer)) addition = Ninja.killPenalty;
 
-            __instance.killTimer = Mathf.Clamp(time, 0f, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
-            DestroyableSingleton<HudManager>.Instance.KillButton.SetCoolDown(__instance.killTimer, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
+            float max = Mathf.Max(PlayerControl.GameOptions.KillCooldown * multiplier + addition, __instance.killTimer);
+            __instance.SetKillTimerUnchecked(Mathf.Clamp(time, 0f, max), max);
             return false;
+        }
+
+        public static void SetKillTimerUnchecked(this PlayerControl player, float time, float max = float.MinValue)
+        {
+            if (max == float.MinValue) max = time;
+
+            player.killTimer = time;
+            DestroyableSingleton<HudManager>.Instance.KillButton.SetCoolDown(time, max);
         }
     }
 
@@ -1260,18 +1292,7 @@ namespace TheOtherRoles.Patches
                 __instance.clearAllTasks();
 
             // Lover suicide trigger on exile
-            if ((Lovers.lover1 != null && __instance == Lovers.lover1) || (Lovers.lover2 != null && __instance == Lovers.lover2))
-            {
-                if (Lovers.separateTeam && Lovers.tasksCount)
-                    __instance.clearAllTasks();
-
-                PlayerControl otherLover = __instance.getPartner();
-                if (otherLover != null && !otherLover.Data.IsDead && Lovers.bothDie)
-                {
-                    otherLover.Exiled();
-                    finalStatuses[otherLover.PlayerId] = FinalStatus.Suicide;
-                }
-            }
+            Lovers.exileLovers(__instance);
 
             // Sidekick promotion trigger on exile
             if (Sidekick.promotesToJackal && Sidekick.sidekick != null && !Sidekick.sidekick.Data.IsDead && __instance == Jackal.jackal && Jackal.jackal == PlayerControl.LocalPlayer)

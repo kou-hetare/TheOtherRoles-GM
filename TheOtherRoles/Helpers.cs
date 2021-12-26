@@ -7,6 +7,7 @@ using UnhollowerBaseLib;
 using UnityEngine;
 using System.Linq;
 using static TheOtherRoles.TheOtherRoles;
+using static TheOtherRoles.TheOtherRolesGM;
 using static TheOtherRoles.GameHistory;
 using TheOtherRoles.Modules;
 using HarmonyLib;
@@ -223,15 +224,16 @@ namespace TheOtherRoles {
         public static bool isNeutral(this PlayerControl player)
         {
             return (player != null &&
-                   (player == Jackal.jackal ||
-                    player == Sidekick.sidekick ||
+                   (player.isRole(RoleId.Jackal) ||
+                    player.isRole(RoleId.Sidekick) ||
                     Jackal.formerJackals.Contains(player) ||
-                    player == Arsonist.arsonist ||
-                    player == Jester.jester ||
-                    player == Opportunist.opportunist) ||
-                    player == Vulture.vulture || 
-                    player == Lawyer.lawyer ||
-                    player == Pursuer.pursuer);
+                    player.isRole(RoleId.Arsonist) ||
+                    player.isRole(RoleId.Jester) ||
+                    player.isRole(RoleId.Opportunist) ||
+                    player.isRole(RoleId.Vulture) ||
+                    player.isRole(RoleId.Lawyer) ||
+                    player.isRole(RoleId.Pursuer) ||
+                    (player.isRole(RoleId.Shifter) && Shifter.isNeutral)));
         }
 
         public static bool isCrew(this PlayerControl player)
@@ -241,13 +243,13 @@ namespace TheOtherRoles {
 
         public static bool hasFakeTasks(this PlayerControl player) {
             return (player.isNeutral() && !player.neutralHasTasks()) || 
-                    player == Madmate.madmate || 
+                    player.isRole(RoleId.Madmate) || 
                    (player.isLovers() && Lovers.separateTeam && !Lovers.tasksCount);
         }
 
         public static bool neutralHasTasks(this PlayerControl player)
         {
-            return player.isNeutral() && (player == Lawyer.lawyer || player == Pursuer.pursuer);
+            return player.isNeutral() && (player.isRole(RoleId.Lawyer) || player.isRole(RoleId.Pursuer) || player.isRole(RoleId.Shifter));
         }
 
         public static bool isGM(this PlayerControl player)
@@ -257,25 +259,12 @@ namespace TheOtherRoles {
 
         public static bool isLovers(this PlayerControl player)
         {
-            return player != null &&
-                ((Lovers.lover1 != null && player == Lovers.lover1) ||
-                (Lovers.lover2 != null && player == Lovers.lover2));
-        }
-
-        public static bool hasAliveKillingLover(this PlayerControl player)
-        {
-            return player.isLovers() && Lovers.existingAndAlive() && Lovers.existingWithKiller();
+            return player != null && Lovers.isLovers(player);
         }
 
         public static PlayerControl getPartner(this PlayerControl player)
         {
-            if (player == null)
-                return null;
-            if (Lovers.lover1 == player)
-                return Lovers.lover2;
-            if (Lovers.lover2 == player)
-                return Lovers.lover1;
-            return null;
+            return Lovers.getPartner(player);
         }
 
         public static bool canBeErased(this PlayerControl player) {
@@ -335,12 +324,13 @@ namespace TheOtherRoles {
 
         public static bool hidePlayerName(PlayerControl source, PlayerControl target) {
             if (Camouflager.camouflageTimer > 0f) return true; // No names are visible
+            else if (!source.Data.Role.IsImpostor && !source.Data.IsDead && Ninja.isStealthed(target)) return true; // Hide ninja nametags from non-impostors
             else if (!MapOptions.hidePlayerNames) return false; // All names are visible
             else if (source == null || target == null) return true;
             else if (source == target) return false; // Player sees his own name
-            else if (source.Data.Role.IsImpostor && (target.Data.Role.IsImpostor || target == Spy.spy)) return false; // Members of team Impostors see the names of Impostors/Spies
-            else if ((source == Lovers.lover1 || source == Lovers.lover2) && (target == Lovers.lover1 || target == Lovers.lover2)) return false; // Members of team Lovers see the names of each other
-            else if ((source == Jackal.jackal || source == Sidekick.sidekick) && (target == Jackal.jackal || target == Sidekick.sidekick || target == Jackal.fakeSidekick)) return false; // Members of team Jackal see the names of each other
+            else if (source.Data.Role.IsImpostor && (target.Data.Role.IsImpostor || target.isRole(RoleId.Spy))) return false; // Members of team Impostors see the names of Impostors/Spies
+            else if (source.getPartner() == target) return false; // Members of team Lovers see the names of each other
+            else if ((source.isRole(RoleId.Jackal) || source.isRole(RoleId.Sidekick)) && (target.isRole(RoleId.Jackal) || target.isRole(RoleId.Sidekick) || target == Jackal.fakeSidekick)) return false; // Members of team Jackal see the names of each other
             return true;
         }
 
@@ -389,14 +379,17 @@ namespace TheOtherRoles {
                 roleCouldUse = true;
             else if (Spy.canEnterVents && Spy.spy != null && Spy.spy == player)
                 roleCouldUse = true;
-            else if (Madmate.canEnterVents && Madmate.madmate != null && Madmate.madmate == player)
+            else if (Madmate.canEnterVents && player.isRole(RoleId.Madmate))
                 roleCouldUse = true;
             else if (Vulture.canUseVents && Vulture.vulture != null && Vulture.vulture == player)
                 roleCouldUse = true;
-            else if (player.Data?.Role != null && player.Data.Role.CanVent)  {
+            else if (player.Data?.Role != null && player.Data.Role.CanVent)
+            {
                 if (Janitor.janitor != null && Janitor.janitor == PlayerControl.LocalPlayer)
                     roleCouldUse = false;
                 else if (Mafioso.mafioso != null && Mafioso.mafioso == PlayerControl.LocalPlayer && Godfather.godfather != null && Godfather.godfather.isAlive())
+                    roleCouldUse = false;
+                else if (!Ninja.canUseVents && player.isRole(RoleId.Ninja))
                     roleCouldUse = false;
                 else
                     roleCouldUse = true;
@@ -407,9 +400,9 @@ namespace TheOtherRoles {
         public static bool roleCanSabotage(this PlayerControl player)
         {
             bool roleCouldUse = false;
-            if (Madmate.canSabotage && Madmate.madmate != null && Madmate.madmate == player)
+            if (Madmate.canSabotage && player.isRole(RoleId.Madmate))
                 roleCouldUse = true;
-            else if (Jester.canSabotage && Jester.jester != null && Jester.jester == player)
+            else if (Jester.canSabotage && player.isRole(RoleId.Jester))
                 roleCouldUse = true;
             else if (player.Data?.Role != null && player.Data.Role.IsImpostor)
                 roleCouldUse = true;
@@ -443,7 +436,7 @@ namespace TheOtherRoles {
             }
 
             // Block impostor not fully grown mini kill
-            else if (Mini.mini != null && target == Mini.mini && !Mini.isGrownUp()) {
+            else if (Mini.mini != null && target.isRole(RoleId.Mini) && !Mini.isGrownUp()) {
                 return MurderAttemptResult.SuppressKill;
             }
 
@@ -491,8 +484,8 @@ namespace TheOtherRoles {
             List<PlayerControl> team = new List<PlayerControl>();
             foreach(PlayerControl p in PlayerControl.AllPlayerControls) {
                 if (player.Data.Role.IsImpostor && p.Data.Role.IsImpostor && player.PlayerId != p.PlayerId && team.All(x => x.PlayerId != p.PlayerId)) team.Add(p);
-                else if (player == Jackal.jackal && p == Sidekick.sidekick) team.Add(p); 
-                else if (player == Sidekick.sidekick && p == Jackal.jackal) team.Add(p);
+                else if (player.isRole(RoleId.Jackal) && p.isRole(RoleId.Sidekick)) team.Add(p); 
+                else if (player.isRole(RoleId.Sidekick) && p.isRole(RoleId.Jackal)) team.Add(p);
             }
             
             return team;

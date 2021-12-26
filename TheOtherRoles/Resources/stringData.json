@@ -255,6 +255,10 @@
         "0": "Lights Out Duration",
         "11": "\u5f37\u5236\u505c\u96fb\u6301\u7d9a\u6642\u9593"
     },
+    "tricksterLightsOutText": {
+        "0": "Lights Are Out",
+        "11": "\u5f37\u5236\u505c\u96fb\u4e2d"
+    },
     "cleaner": {
         "0": "Cleaner",
         "11": "\u30af\u30ea\u30fc\u30ca\u30fc"
@@ -377,7 +381,11 @@
     },
     "loversImpLoverRate": {
         "0": "Chance One Lover Is Impostor",
-        "11": "\u30a4\u30f3\u30dd\u30b9\u30bf\u30fc\u306b\u306a\u308b\u78ba\u7387"
+        "11": "\u7247\u65b9\u304c\u30a4\u30f3\u30dd\u30b9\u30bf\u30fc\u306b\u306a\u308b\u78ba\u7387"
+    },
+    "loversNumCouples": {
+        "0": "Number Of Couples",
+        "11": "\u30ab\u30c3\u30d7\u30eb\u306e\u6570"
     },
     "loversBothDie": {
         "0": "Both Lovers Die",
@@ -403,27 +411,27 @@
         "0": "Guesser",
         "11": "\u30b2\u30c3\u30b5\u30fc"
     },
-    "goodGuesser": {
+    "niceGuesser": {
         "0": "Nice Guesser",
         "11": "\u30ca\u30a4\u30b9\u30b2\u30c3\u30b5\u30fc"
     },
-    "goodGuesserIntroDesc": {
+    "niceGuesserIntroDesc": {
         "0": "Guess and shoot",
         "11": "\u63a8\u6e2c\u3057\u3066\u6483\u3061\u629c\u3051\u3088\u3046"
     },
-    "goodGuesserShortDesc": {
+    "niceGuesserShortDesc": {
         "0": "Guess and shoot",
         "11": "\u63a8\u6e2c\u3057\u3066\u6483\u3061\u629c\u3051\u3088\u3046"
     },
-    "badGuesser": {
+    "evilGuesser": {
         "0": "Evil Guesser",
         "11": "\u30a4\u30d3\u30eb\u30b2\u30c3\u30b5\u30fc"
     },
-    "badGuesserIntroDesc": {
+    "evilGuesserIntroDesc": {
         "0": "Guess and shoot",
         "11": "\u63a8\u6e2c\u3057\u3066\u6483\u3061\u629c\u3051\u3088\u3046"
     },
-    "badGuesserShortDesc": {
+    "evilGuesserShortDesc": {
         "0": "Guess and shoot",
         "11": "\u63a8\u6e2c\u3057\u3066\u6483\u3061\u629c\u3051\u3088\u3046"
     },
@@ -451,9 +459,21 @@
         "0": "Guesses Ignore The Medic Shield",
         "11": "\u30e1\u30c7\u30a3\u30c3\u30af\u306e\u30b7\u30fc\u30eb\u30c9\u3092\u7121\u8996\u3059\u308b"
     },
+    "guesserEvilCanKillSpy": {
+        "0": "Evil Guesser Can Guess The Spy",
+        "11": "\u30a4\u30d3\u30eb\u304c\u30b9\u30d1\u30a4\u3092\u6483\u3066\u308b"
+    },
+    "guesserSpawnBothRate": {
+        "0": "Both Guesser Spawn Rate",
+        "11": "\u30ca\u30a4\u30b9\u30fb\u30a4\u30d3\u30eb\u4e21\u65b9\u51fa\u73fe\u7387"
+    },
     "guesserGuessChat": {
         "0": "Guesser guessed the role {0} for {1}!",
         "11": "\u30b2\u30c3\u30b5\u30fc\u306f\u300c{1}\u300d\u306e\u30ed\u30fc\u30eb\u304c\u300c{0}\u300d\u3060\u3068\u63a8\u6e2c\u3057\u305f\uff01"
+    },
+    "guesserGuessesLeft": {
+        "0": "Guesses Left: {0}",
+        "11": "\u6b8b\u308a {0}\u767a"
     },
     "jester": {
         "0": "Jester",
@@ -579,9 +599,41 @@
         "0": "Shift your role",
         "11": "\u30ed\u30fc\u30eb\u3092\u596a\u304a\u3046"
     },
+    "niceShifter": {
+        "0": "Shifter",
+        "11": "\u30b7\u30d5\u30bf\u30fc"
+    },
+    "niceShifterIntroDesc": {
+        "0": "Shift your role",
+        "11": "\u30b7\u30d5\u30c8\u3067\u30af\u30eb\u30fc\u306e\u30ed\u30fc\u30eb\u3092\u5b88\u308d\u3046"
+    },
+    "niceShifterShortDesc": {
+        "0": "Shift your role",
+        "11": "\u30b7\u30d5\u30c8\u3067\u30af\u30eb\u30fc\u306e\u30ed\u30fc\u30eb\u3092\u5b88\u308d\u3046"
+    },
+    "corruptedShifter": {
+        "0": "Chain-Shifter",
+        "11": "\u30c1\u30a7\u30a4\u30f3\u30b7\u30d5\u30bf\u30fc"
+    },
+    "corruptedShifterIntroDesc": {
+        "0": "Steal someone's role",
+        "11": "\u30ed\u30fc\u30eb\u3092\u596a\u3063\u3066\u52dd\u5229\u3092\u63b4\u3081\u3088\u3046"
+    },
+    "corruptedShifterShortDesc": {
+        "0": "Steal someone's role",
+        "11": "\u30ed\u30fc\u30eb\u3092\u596a\u3063\u3066\u52dd\u5229\u3092\u63b4\u3081\u3088\u3046"
+    },
+    "shifterIsNeutralRate": {
+        "0": "Chance Shifter Is Chain Shifter",
+        "11": "\u30c1\u30a7\u30a4\u30f3\u30b7\u30d5\u30bf\u30fc\u306b\u306a\u308b\u78ba\u7387"
+    },
     "shifterShiftsModifiers": {
         "0": "Shifts Modifiers",
         "11": "\u5bfe\u8c61\u306e\u30b9\u30c6\u30fc\u30bf\u30b9\u3082\u30b7\u30d5\u30c8\u3055\u308c\u308b"
+    },
+    "shifterPastShifters": {
+        "0": "Can Shift Former Shifters",
+        "11": "\u5143\u30b7\u30d5\u30bf\u30fc\u306b\u30b7\u30d5\u30c8\u3067\u304d\u308b"
     },
     "mayor": {
         "0": "Mayor",
@@ -815,13 +867,33 @@
         "0": "Swapper",
         "11": "\u30b9\u30ef\u30c3\u30d1\u30fc"
     },
-    "swapperIntroDesc": {
+    "niceSwapper": {
+        "0": "Nice Swapper",
+        "11": "\u30ca\u30a4\u30b9\u30b9\u30ef\u30c3\u30d1\u30fc"
+    },
+    "niceSwapperIntroDesc": {
         "0": "Swap votes to exile the <color=#FF1919FF>Impostors</color>",
         "11": "\u6295\u7968\u5148\u3092\u5165\u308c\u66ff\u3048\u3066<color=#FF1919FF>\u30a4\u30f3\u30dd\u30b9\u30bf\u30fc</color>\u3092\u8ffd\u653e\u3057\u3088\u3046"
     },
-    "swapperShortDesc": {
+    "niceSwapperShortDesc": {
         "0": "Swap votes",
         "11": "\u6295\u7968\u5148\u3092\u5165\u308c\u66ff\u3048\u3088\u3046"
+    },
+    "evilSwapper": {
+        "0": "Evil Swapper",
+        "11": "\u30a4\u30d3\u30eb\u30b9\u30ef\u30c3\u30d1\u30fc"
+    },
+    "evilSwapperIntroDesc": {
+        "0": "Swap votes to protect your allies",
+        "11": "\u6295\u7968\u5148\u3092\u5165\u308c\u66ff\u3048\u3066\u751f\u304d\u306a\u304c\u3089\u3048\u3088\u3046"
+    },
+    "evilSwapperShortDesc": {
+        "0": "Swap votes",
+        "11": "\u6295\u7968\u5148\u3092\u5165\u308c\u66ff\u3048\u3088\u3046"
+    },
+    "swapperIsImpRate": {
+        "0": "Chance Swapper Is Impostor",
+        "11": "\u30a4\u30f3\u30dd\u30b9\u30bf\u30fc\u306b\u306a\u308b\u78ba\u7387"
     },
     "swapperCanCallEmergency": {
         "0": "Can Call Emergency Meetings",
@@ -830,6 +902,14 @@
     "swapperCanOnlySwapOthers": {
         "0": "Can Only Swap Others",
         "11": "\u30b9\u30ef\u30c3\u30d1\u30fc\u304c\u30b9\u30ef\u30c3\u30d7\u5bfe\u8c61\u5916"
+    },
+    "swapperNumSwaps": {
+        "0": "Number Of Swaps",
+        "11": "\u30b9\u30ef\u30c3\u30d7\u3067\u304d\u308b\u56de\u6570"
+    },
+    "swapperSwapsLeft": {
+        "0": "Swaps Left: {0}",
+        "11": "\u30b9\u30ef\u30c3\u30d7\u6b8b\u308a {0}\u56de"
     },
     "seer": {
         "0": "Seer",
@@ -890,6 +970,18 @@
     "hackerOnlyColorType": {
         "0": "Only Sees Color Type",
         "11": "\u8272\u8abf\u306e\u307f\u898b\u3048\u308b"
+    },
+    "hackerToolsNumber": {
+        "0": "Max Mobile Gadget Charges",
+        "11": "\u6700\u5927\u30c1\u30e3\u30fc\u30b8\u6570"
+    },
+    "hackerRechargeTasksNumber": {
+        "0": "Number Of Tasks Needed For Recharging",
+        "11": "\u5145\u96fb\u306b\u5fc5\u8981\u306a\u30bf\u30b9\u30af\u6570"
+    },
+    "hackerChargesText": {
+        "0": "Charges: {0}/{1}",
+        "11": "\u30c1\u30e3\u30fc\u30b8\u6570: {0}/{1}"
     },
     "tracker": {
         "0": "Tracker",
@@ -1261,6 +1353,50 @@
         "0": "Voting The Witch Saves All The Targets",
         "11": "\u8ffd\u653e\u3055\u308c\u305f\u3089\u9b54\u8853\u304c\u89e3\u3051\u308b"
     },
+    "ninja": {
+        "0": "Ninja",
+        "11": "\u30cb\u30f3\u30b8\u30e3"
+    },
+    "ninjaIntroDesc": {
+        "0": "Use your stealth to confuse the crew",
+        "11": "\u5fcd\u8853\u3092\u4f7f\u3063\u3066\u30af\u30eb\u30fc\u3092\u60d1\u308f\u305b\u3088\u3046"
+    },
+    "ninjaShortDesc": {
+        "0": "Use your stealth to confuse the crew",
+        "11": "\u5fcd\u8853\u3092\u4f7f\u3063\u3066\u30af\u30eb\u30fc\u3092\u60d1\u308f\u305b\u3088\u3046"
+    },
+    "ninjaFullDesc": {
+        "0": "The Ninja is an Impostor that can turn invisible.\nWhile stealthed, the Ninja moves faster than a normal Crewmate,\nand kills don't cause them to warp. However, using their stealth ability\nincreases their kill cooldown--a penalty for killing while invisible,\nand a short penalty applied after unstealthing.",
+        "11": "\u30fb\u4e00\u5b9a\u6642\u9593\u900f\u660e\u306b\u306a\u308c\u308b\n\u30fb\u900f\u660e\u5316\u4e2d\u306f\u79fb\u52d5\u901f\u5ea6\u304c\u4e0a\u6607\u3057\u3001\u30ad\u30eb\u30e2\u30fc\u30b7\u30e7\u30f3\u304c\u767a\u751f\u3057\u306a\u3044\n\u30fb\u900f\u660e\u5316\u4e2d\u306b\u30ad\u30eb\u3057\u305f\u5834\u5408\u3001\u6b21\u306e\u30ad\u30eb\u30af\u30fc\u30eb\u304c\u4f38\u3073\u308b"
+    },
+    "ninjaStealthCooldown": {
+        "0": "Stealth Cooldown",
+        "11": "\u5fcd\u8853\u30af\u30fc\u30eb\u30c0\u30a6\u30f3"
+    },
+    "ninjaStealthDuration": {
+        "0": "Stealth Duration",
+        "11": "\u5fcd\u8853\u6301\u7d9a\u6642\u9593"
+    },
+    "ninjaKillPenalty": {
+        "0": "Kill Cool Penalty For Stealth Kills",
+        "11": "\u5fcd\u8853\u30ad\u30eb\u5f8c\u3001\u8ffd\u52a0\u30ad\u30eb\u30af\u30fc\u30eb"
+    },
+    "ninjaSpeedBonus": {
+        "0": "Stealth Speed Bonus",
+        "11": "\u5fcd\u8853\u4e2d\u3001\u79fb\u52d5\u901f\u5ea6"
+    },
+    "ninjaFadeTime": {
+        "0": "Fade Time",
+        "11": "\u900f\u660e\u5316\u306b\u304b\u304b\u308b\u6642\u9593"
+    },
+    "ninjaCanVent": {
+        "0": "Can Use Vents",
+        "11": "\u30d9\u30f3\u30c8\u306b\u5165\u308c\u308b"
+    },
+    "ninjaCanBeTargeted": {
+        "0": "Can Be Targeted While Stealthed",
+        "11": "\u5fcd\u8853\u4e2d\u3001\u4ed6\u4eba\u306b\u30bf\u30fc\u30b2\u30c3\u30c8\u3055\u308c\u308b"
+    },
     "husk": {
         "0": "Husk",
         "11": "\u306a\u308c\u306e\u679c\u3066"
@@ -1376,6 +1512,10 @@
     "playRandomMaps": {
         "0": "Play On A Random Map",
         "11": "\u6bce\u56de\u30de\u30c3\u30d7\u304c\u30e9\u30f3\u30c0\u30e0\u306b"
+    },
+    "roleNumAssigned": {
+        "0": "Role Count",
+        "11": "\u4eba\u6570"
     },
     "optionOn": {
         "0": "On",
@@ -1569,7 +1709,7 @@
         "0": "Sabotage",
         "11": "\u30b5\u30dc"
     },
-    "roleSummaryDC": {
+    "roleSummaryDisconnected": {
         "0": "DC'd",
         "11": "\u5207\u65ad"
     },
@@ -1645,6 +1785,26 @@
         "0": "{0}x",
         "11": "{0}x"
     },
+    "unitTimes": {
+        "0": "{0}x",
+        "11": "{0}\u56de"
+    },
+    "unitVotes": {
+        "0": "{0}",
+        "11": "{0}\u7968"
+    },
+    "unitCouples": {
+        "0": "{0} Couples",
+        "11": "{0}\u7d44"
+    },
+    "unitPlayers": {
+        "0": "{0}",
+        "11": "{0}\u4eba"
+    },
+    "unitPercent": {
+        "0": "{0}%",
+        "11": "{0}%"
+    },
     "creditsMain": {
         "0": "Modded by <color=#FCCE03FF>Eisbison</color>, <color=#FCCE03FF>Thunderstorm584</color>, <color=#FCCE03FF>EndOfFile</color> & <color=#FCCE03FF>Mall\u00f6ris</color>\nDesign by <color=#FCCE03FF>Bavari</color>, Customization by <color=#c1a9ff>Virtual_Dusk</color>",
         "11": "MOD <color=#FCCE03FF>Eisbison</color>\u3001<color=#FCCE03FF>Thunderstorm584</color>\u3001<color=#FCCE03FF>EndOfFile</color>\u3001<color=#FCCE03FF>Mall\u00f6ris</color>\n\u30c7\u30b6\u30a4\u30f3 <color=#FCCE03FF>Bavari</color>\u3001\u30ab\u30b9\u30bf\u30de\u30a4\u30ba\u30fb\u65e5\u672c\u8a9e\u8a33 <color=#c1a9ff>Virtual_Dusk</color>"
@@ -1654,8 +1814,8 @@
         "11": "<size=80%>MOD <color=#FCCE03FF>Eisbison</color>\u3001<color=#FCCE03FF>EndOfFile</color>\n<color=#FCCE03FF>Thunderstorm584</color>\u3001<color=#FCCE03FF>Mall\u00f6ris</color>\n\u30dc\u30bf\u30f3\u30c7\u30b6\u30a4\u30f3 <color=#FCCE03FF>Bavari</color>\n\u30ab\u30b9\u30bf\u30de\u30a4\u30ba\u30fb\u65e5\u672c\u8a9e\u8a33 <color=#c1a9ff>Virtual_Dusk</color></size>"
     },
     "creditsVersion": {
-        "0": "GM Edition Visor Custom v{0}",
-        "11": "GM\u30a8\u30c7\u30a3\u30b7\u30e7\u30f3  Visor Custom v{0}"
+        "0": "GM Edition v{0}",
+        "11": "GM\u30a8\u30c7\u30a3\u30b7\u30e7\u30f3 v{0}"
     },
     "updateButton": {
         "0": "Update\nThe Other Roles GM",
@@ -1856,6 +2016,14 @@
     "huskFullDesc": {
         "0": "The Husk is what remains of a former Neutral role.\nYou're free of all responsibility, as your loss is set in stone.",
         "11": "\u5143\u5f79\u8077\u6301\u3061\u306e\u306a\u308c\u306e\u679c\u3066\n\u3082\u3046\u3084\u308b\u3053\u3068\u304c\u306a\u3044\n\u751f\u304d\u3066\u3082\u6b7b\u3093\u3067\u3082\u8ca0\u3051\u306f\u78ba\u5b9a\u3057\u3061\u3083\u3063\u305f"
+    },
+    "evilSwapperFullDesc": {
+        "0": "During meetings the Swapper can exchange votes that two people get\n(i.e. all votes that player A got will be given to player B and vice versa).\nBecause of the Swappers strength in meetings, they might not start emergency\nmeetings and can't fix lights and comms.",
+        "11": "\u30fb\u81ea\u5206\u542b\u3081\u6295\u7968\u3092\u5165\u308c\u66ff\u3048\u308b\u3053\u3068\u304c\u3067\u304d\u308b\uff08\u8a2d\u5b9a\u306b\u3088\u308b\uff09\n\u30fb\u30b9\u30ef\u30c3\u30d7\u5236\u9650\u3042\u308a\uff08\u8a2d\u5b9a\u306b\u3088\u308b\uff09"
+    },
+    "corruptedShifterFullDesc": {
+        "0": "A Neutral version of the Shifter, known as the Chain-Shifter,\nis able to steal roles from any player, regardless of their team.\nThe shifted player then inherits the role of Chain-Shifter, and must\nsteal another player's role. The player who retains the Chain-Shifter\nrole at the end of the game automatically loses.",
+        "11": "\u30fb\u6700\u5f8c\u307e\u3067\u3053\u306e\u5f79\u8077\u306b\u306a\u3063\u3066\u3044\u305f\u4eba\u306f\u6557\u5317\u3059\u308b\n\u30fb\u30af\u30eb\u30fc\u3001\u30a4\u30f3\u30dd\u30b9\u30bf\u30fc\u3001\u305d\u306e\u4ed6\u9663\u55b6\u554f\u308f\u305a\u30ed\u30fc\u30eb\u3092\u76d7\u3081\u308b\n\u30fb\u596a\u3063\u305f\u5f79\u8077\u306e\u52dd\u5229\u6761\u4ef6\u304c\u52dd\u5229\u6761\u4ef6\u3068\u306a\u308b\n\u30fb\u596a\u308f\u308c\u305f\u4eba\u306f\u6b21\u306e\u30b7\u30d5\u30bf\u30fc\u306b\u306a\u308a\u3001\u8ab0\u304b\u306e\u30ed\u30fc\u30eb\u3092\u76d7\u307e\u306a\u304f\u3066\u306f\u3044\u3051\u306a\u3044\n\u30fb\u5143\u30b7\u30d5\u30bf\u30fc\u306e\u30ed\u30fc\u30eb\u306f\u76d7\u3081\u306a\u3044"
     },
     "shifterBlurb": {
         "0": "The Shifter can take over the role of another Crewmate, the other player will transform into a Crewmate.",
@@ -2166,6 +2334,14 @@
     },
     "WitchText": {
         "11": "\u9b54\u8853"
+    },
+    "NinjaText": {
+        "0": "Stealth",
+        "11": "\u5fcd\u8853"
+    },
+    "NinjaUnstealthText": {
+        "0": "Unstealth",
+        "11": "\u89e3\u9664"
     },
     "colorSalmon": {
         "0": "Salmon",

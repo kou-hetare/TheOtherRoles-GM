@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
@@ -11,6 +11,8 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using TheOtherRoles.Objects;
+using static TheOtherRoles.GameHistory;
+using TheOtherRoles.Patches;
 
 namespace TheOtherRoles
 {
@@ -46,12 +48,7 @@ namespace TheOtherRoles
             Detective.clearAndReload();
             TimeMaster.clearAndReload();
             Medic.clearAndReload();
-            Shifter.clearAndReload();
-            Swapper.clearAndReload();
-            Lovers.clearAndReload();
             Seer.clearAndReload();
-            Morphling.clearAndReload();
-            Camouflager.clearAndReload();
             Hacker.clearAndReload();
             Mini.clearAndReload();
             Tracker.clearAndReload();
@@ -69,14 +66,12 @@ namespace TheOtherRoles
             Guesser.clearAndReload();
             BountyHunter.clearAndReload();
             Bait.clearAndReload();
-            Madmate.clearAndReload();
-            GM.clearAndReload();
-            Opportunist.clearAndReload();
             Vulture.clearAndReload();
             Medium.clearAndReload();
             Lawyer.clearAndReload();
             Pursuer.clearAndReload();
             Witch.clearAndReload();
+            TheOtherRolesGM.clearAndReloadRoles();
         }
 
         public static class Jester
@@ -181,34 +176,6 @@ namespace TheOtherRoles
             }
         }
 
-        public static class Sheriff
-        {
-            public static PlayerControl sheriff;
-            public static Color color = new Color32(248, 205, 70, byte.MaxValue);
-
-            public static float cooldown = 30f;
-            public static int numShots = 2;
-            public static int maxShots = 2;
-            public static bool canKillNeutrals = false;
-            public static bool misfireKillsTarget = false;
-            public static bool spyCanDieToSheriff = false;
-            public static bool madmateCanDieToSheriff = false;
-
-            public static PlayerControl currentTarget;
-
-            public static void clearAndReload()
-            {
-                sheriff = null;
-                currentTarget = null;
-                cooldown = CustomOptionHolder.sheriffCooldown.getFloat();
-                maxShots = numShots = (int)CustomOptionHolder.sheriffNumShots.getFloat();
-                canKillNeutrals = CustomOptionHolder.sheriffCanKillNeutrals.getBool();
-                spyCanDieToSheriff = CustomOptionHolder.spyCanDieToSheriff.getBool();
-                madmateCanDieToSheriff = CustomOptionHolder.madmateCanDieToSheriff.getBool();
-                misfireKillsTarget = CustomOptionHolder.sheriffMisfireKillsTarget.getBool();
-            }
-        }
-
         public static class Lighter
         {
             public static PlayerControl lighter;
@@ -308,7 +275,7 @@ namespace TheOtherRoles
 
             public static int showShielded = 0;
             public static bool showAttemptToShielded = false;
-        public static bool showAttemptToMedic = false;
+            public static bool showAttemptToMedic = false;
             public static bool setShieldAfterMeeting = false;
 
             public static Color shieldedColor = new Color32(0, 221, 255, byte.MaxValue);
@@ -331,113 +298,8 @@ namespace TheOtherRoles
                 usedShield = false;
                 showShielded = CustomOptionHolder.medicShowShielded.getSelection();
                 showAttemptToShielded = CustomOptionHolder.medicShowAttemptToShielded.getBool();
-            showAttemptToMedic = CustomOptionHolder.medicShowAttemptToMedic.getBool();
+                showAttemptToMedic = CustomOptionHolder.medicShowAttemptToMedic.getBool();
                 setShieldAfterMeeting = CustomOptionHolder.medicSetShieldAfterMeeting.getBool();
-            }
-        }
-
-        public static class Shifter
-        {
-            public static PlayerControl shifter;
-            public static Color color = new Color32(102, 102, 102, byte.MaxValue);
-
-            public static PlayerControl futureShift;
-            public static PlayerControl currentTarget;
-            public static bool shiftModifiers = false;
-
-            private static Sprite buttonSprite;
-            public static Sprite getButtonSprite()
-            {
-                if (buttonSprite) return buttonSprite;
-                buttonSprite = ModTranslation.getImage("ShiftButton", 115f);
-                return buttonSprite;
-            }
-
-            public static void clearAndReload()
-            {
-                shifter = null;
-                currentTarget = null;
-                futureShift = null;
-                shiftModifiers = CustomOptionHolder.shifterShiftsModifiers.getBool();
-            }
-        }
-
-        public static class Swapper
-        {
-            public static PlayerControl swapper;
-            public static Color color = new Color32(134, 55, 86, byte.MaxValue);
-            private static Sprite spriteCheck;
-            public static bool canCallEmergency = false;
-            public static bool canOnlySwapOthers = false;
-
-            public static byte playerId1 = Byte.MaxValue;
-            public static byte playerId2 = Byte.MaxValue;
-
-            public static Sprite getCheckSprite()
-            {
-                if (spriteCheck) return spriteCheck;
-                spriteCheck = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.SwapperCheck.png", 150f);
-                return spriteCheck;
-            }
-
-            public static void clearAndReload()
-            {
-                swapper = null;
-                playerId1 = Byte.MaxValue;
-                playerId2 = Byte.MaxValue;
-                canCallEmergency = CustomOptionHolder.swapperCanCallEmergency.getBool();
-                canOnlySwapOthers = CustomOptionHolder.swapperCanOnlySwapOthers.getBool();
-            }
-        }
-
-        public static class Lovers
-        {
-            public static PlayerControl lover1;
-            public static PlayerControl lover2;
-            public static Color color = new Color32(232, 57, 185, byte.MaxValue);
-
-            public static bool bothDie = true;
-            // Lovers save if next to be exiled is a lover, because RPC of ending game comes before RPC of exiled
-            public static bool notAckedExiledIsLover = false;
-
-            // Making this closer to the au.libhalt.net version of Lovers
-            public static bool separateTeam = true;
-            public static bool tasksCount = false;
-
-            public static bool hasTasks
-            {
-                get
-                {
-                    return !separateTeam || tasksCount;
-                }
-            }
-
-            public static bool existing()
-            {
-                return lover1 != null && lover2 != null && !lover1.Data.Disconnected && !lover2.Data.Disconnected;
-            }
-
-            public static bool existingAndAlive()
-            {
-                return existing() && !lover1.Data.IsDead && !lover2.Data.IsDead && !notAckedExiledIsLover; // ADD NOT ACKED IS LOVER
-            }
-
-            public static bool existingWithKiller()
-            {
-                return existing() && (lover1 == Jackal.jackal || lover2 == Jackal.jackal
-                                   || lover1 == Sidekick.sidekick || lover2 == Sidekick.sidekick
-                                   || lover1.Data.Role.IsImpostor || lover2.Data.Role.IsImpostor);
-            }
-
-
-            public static void clearAndReload()
-            {
-                lover1 = null;
-                lover2 = null;
-                notAckedExiledIsLover = false;
-                bothDie = CustomOptionHolder.loversBothDie.getBool();
-                separateTeam = CustomOptionHolder.loversSeparateTeam.getBool();
-                tasksCount = CustomOptionHolder.loversTasksCount.getBool();
             }
         }
 
@@ -469,166 +331,28 @@ namespace TheOtherRoles
             }
         }
 
-        public static class Morphling
-        {
-            public static PlayerControl morphling;
-            public static Color color = Palette.ImpostorRed;
-            private static Sprite sampleSprite;
-            private static Sprite morphSprite;
-
-            public static float cooldown = 30f;
-            public static float duration = 10f;
-
-            public static PlayerControl currentTarget;
-            public static PlayerControl sampledTarget;
-            public static PlayerControl morphTarget;
-            public static float morphTimer = 0f;
-
-            public static void handleMorphing()
-            {
-                if (morphling == null) return;
-
-                // first, if camo is active, don't do anything
-                if (Camouflager.camouflager != null && Camouflager.camouflageTimer > 0f) return;
-
-                // next, if we're currently morphed, set our skin to the target
-                if (morphTimer > 0f && morphTarget != null)
-                {
-                    morphling.morphToPlayer(morphTarget);
-                }
-                else
-                {
-                    morphling.resetMorph();
-                }
-            }
-
-            public static void startMorph(PlayerControl target)
-            {
-                morphTarget = target;
-                morphTimer = duration;
-                handleMorphing();
-            }
-
-            public static void resetMorph()
-            {
-                morphTarget = null;
-                morphTimer = 0f;
-                handleMorphing();
-            }
-
-            public static void clearAndReload()
-            {
-                resetMorph();
-                morphling = null;
-                currentTarget = null;
-                sampledTarget = null;
-                morphTarget = null;
-                morphTimer = 0f;
-                cooldown = CustomOptionHolder.morphlingCooldown.getFloat();
-                duration = CustomOptionHolder.morphlingDuration.getFloat();
-            }
-
-            public static Sprite getSampleSprite()
-            {
-                if (sampleSprite) return sampleSprite;
-                sampleSprite = ModTranslation.getImage("SampleButton", 115f);
-                return sampleSprite;
-            }
-
-            public static Sprite getMorphSprite()
-            {
-                if (morphSprite) return morphSprite;
-                morphSprite = ModTranslation.getImage("MorphButton", 115f);
-                return morphSprite;
-            }
-        }
-
-        public static class Camouflager
-        {
-            public static PlayerControl camouflager;
-            public static Color color = Palette.ImpostorRed;
-
-            public static float cooldown = 30f;
-            public static float duration = 10f;
-            public static float camouflageTimer = 0f;
-            public static bool randomColors = false;
-
-            public static GameData.PlayerOutfit camoData;
-
-            private static Sprite buttonSprite;
-            public static Sprite getButtonSprite()
-            {
-                if (buttonSprite) return buttonSprite;
-                buttonSprite = ModTranslation.getImage("CamoButton", 115f);
-                return buttonSprite;
-            }
-
-            public static void startCamouflage()
-            {
-                camouflageTimer = duration;
-
-                if (randomColors)
-                    camoData.ColorId = (byte)TheOtherRoles.rnd.Next(0, Palette.PlayerColors.Length);
-                else
-                    camoData.ColorId = 6;
-
-                foreach (PlayerControl p in PlayerControl.AllPlayerControls)
-                {
-                    if (p == null) continue;
-                    p.setOutfit(camoData);
-                }
-            }
-
-            public static void resetCamouflage()
-            {
-                camouflageTimer = 0f;
-                foreach (PlayerControl p in PlayerControl.AllPlayerControls)
-                {
-                    if (p == null) continue;
-
-                    // special case for morphling
-                    if (Morphling.morphling?.PlayerId == p.PlayerId)
-                    {
-                        Morphling.handleMorphing();
-                    }
-                    else
-                    {
-                        p.resetMorph();
-                    }
-                }
-            }
-
-            public static void clearAndReload()
-            {
-                resetCamouflage();
-                camouflager = null;
-                camouflageTimer = 0f;
-                cooldown = CustomOptionHolder.camouflagerCooldown.getFloat();
-                duration = CustomOptionHolder.camouflagerDuration.getFloat();
-                randomColors = CustomOptionHolder.camouflagerRandomColors.getBool();
-
-                camoData = new GameData.PlayerOutfit();
-                camoData.PlayerName = "";
-                camoData.HatId = "";
-                camoData.ColorId = 6;
-                camoData.SkinId = "";
-                camoData.PetId = "";
-                camoData.VisorId = "";
-                camoData.NamePlateId = "";
-            }
-        }
-
         public static class Hacker
         {
             public static PlayerControl hacker;
+            public static Minigame vitals = null;
+        public static Minigame doorLog = null;
             public static Color color = new Color32(117, 250, 76, byte.MaxValue);
 
             public static float cooldown = 30f;
             public static float duration = 10f;
+            public static float toolsNumber = 5f;
             public static bool onlyColorType = false;
             public static float hackerTimer = 0f;
+            public static int rechargeTasksNumber = 2;
+            public static int rechargedTasks = 2;
+            public static int chargesVitals = 1;
+            public static int chargesAdminTable = 1;
 
             private static Sprite buttonSprite;
+            private static Sprite vitalsSprite;
+        private static Sprite logSprite;
+            private static Sprite adminSprite;
+
             public static Sprite getButtonSprite()
             {
                 if (buttonSprite) return buttonSprite;
@@ -636,13 +360,43 @@ namespace TheOtherRoles
                 return buttonSprite;
             }
 
+            public static Sprite getVitalsSprite() {
+                if (vitalsSprite) return vitalsSprite;
+                vitalsSprite = HudManager.Instance.UseButton.fastUseSettings[ImageNames.VitalsButton].Image;
+                return vitalsSprite;
+        }
+
+        public static Sprite getLogSprite() {
+            if (logSprite) return logSprite;
+            logSprite = HudManager.Instance.UseButton.fastUseSettings[ImageNames.DoorLogsButton].Image;
+            return logSprite;
+            }
+
+            public static Sprite getAdminSprite() {
+                byte mapId = PlayerControl.GameOptions.MapId;
+                UseButtonSettings button = HudManager.Instance.UseButton.fastUseSettings[ImageNames.PolusAdminButton]; // Polus
+                if (mapId == 0 || mapId == 3) button = HudManager.Instance.UseButton.fastUseSettings[ImageNames.AdminMapButton]; // Skeld || Dleks
+                else if (mapId == 1) button = HudManager.Instance.UseButton.fastUseSettings[ImageNames.MIRAAdminButton]; // Mira HQ
+                else if (mapId == 4) button = HudManager.Instance.UseButton.fastUseSettings[ImageNames.AirshipAdminButton]; // Airship
+                adminSprite = button.Image;
+                return adminSprite;
+            }
+
             public static void clearAndReload()
             {
                 hacker = null;
+                vitals = null;
+            doorLog = null;
                 hackerTimer = 0f;
+                adminSprite = null;
                 cooldown = CustomOptionHolder.hackerCooldown.getFloat();
                 duration = CustomOptionHolder.hackerHackeringDuration.getFloat();
                 onlyColorType = CustomOptionHolder.hackerOnlyColorType.getBool();
+                toolsNumber = CustomOptionHolder.hackerToolsNumber.getFloat();
+                rechargeTasksNumber = Mathf.RoundToInt(CustomOptionHolder.hackerRechargeTasksNumber.getFloat());
+                rechargedTasks = Mathf.RoundToInt(CustomOptionHolder.hackerRechargeTasksNumber.getFloat());
+                chargesVitals = Mathf.RoundToInt(CustomOptionHolder.hackerToolsNumber.getFloat()) / 2;
+                chargesAdminTable = Mathf.RoundToInt(CustomOptionHolder.hackerToolsNumber.getFloat()) / 2;
             }
         }
 
@@ -1208,15 +962,18 @@ namespace TheOtherRoles
 
         public static class Guesser
         {
-            public static PlayerControl guesser;
+            public static PlayerControl niceGuesser;
+            public static PlayerControl evilGuesser;
             public static Color color = new Color32(255, 255, 0, byte.MaxValue);
             private static Sprite targetSprite;
 
-            public static int remainingShots = 2;
+            public static int remainingShotsEvilGuesser = 2;
+            public static int remainingShotsNiceGuesser = 2;
             public static bool onlyAvailableRoles = true;
         	public static bool hasMultipleShotsPerMeeting = false;
-        public static bool showInfoInGhostChat = true;
-        public static bool killsThroughShield = true;
+            public static bool showInfoInGhostChat = true;
+            public static bool killsThroughShield = true;
+            public static bool evilGuesserCanGuessSpy = true;
 
             public static Sprite getTargetSprite()
             {
@@ -1225,15 +982,39 @@ namespace TheOtherRoles
                 return targetSprite;
             }
 
+            public static bool isGuesser (byte playerId) {
+                if ((niceGuesser != null && niceGuesser.PlayerId == playerId) || (evilGuesser != null && evilGuesser.PlayerId == playerId)) return true;
+                return false;
+            }
+
+            public static void clear (byte playerId) {
+                if (niceGuesser != null && niceGuesser.PlayerId == playerId) niceGuesser = null;
+                else if (evilGuesser != null && evilGuesser.PlayerId == playerId) evilGuesser = null;
+            }
+
+            public static int remainingShots(byte playerId, bool shoot = false) {
+                int remainingShots = remainingShotsEvilGuesser;
+                if (niceGuesser != null && niceGuesser.PlayerId == playerId) {
+                    remainingShots = remainingShotsNiceGuesser;
+                    if (shoot) remainingShotsNiceGuesser = Mathf.Max(0, remainingShotsNiceGuesser - 1);
+                } else if (shoot) {
+                    remainingShotsEvilGuesser = Mathf.Max(0, remainingShotsEvilGuesser - 1);
+                }
+                return remainingShots;
+            }
+
             public static void clearAndReload()
             {
-                guesser = null;
+                niceGuesser = null;
+                evilGuesser = null;
 
-                remainingShots = Mathf.RoundToInt(CustomOptionHolder.guesserNumberOfShots.getFloat());
+                remainingShotsEvilGuesser = Mathf.RoundToInt(CustomOptionHolder.guesserNumberOfShots.getFloat());
+                remainingShotsNiceGuesser = Mathf.RoundToInt(CustomOptionHolder.guesserNumberOfShots.getFloat());
                 onlyAvailableRoles = CustomOptionHolder.guesserOnlyAvailableRoles.getBool();
             	hasMultipleShotsPerMeeting = CustomOptionHolder.guesserHasMultipleShotsPerMeeting.getBool();
-            showInfoInGhostChat = CustomOptionHolder.guesserShowInfoInGhostChat.getBool();
-            killsThroughShield = CustomOptionHolder.guesserKillsThroughShield.getBool();
+                showInfoInGhostChat = CustomOptionHolder.guesserShowInfoInGhostChat.getBool();
+                killsThroughShield = CustomOptionHolder.guesserKillsThroughShield.getBool();
+                evilGuesserCanGuessSpy = CustomOptionHolder.guesserEvilCanKillSpy.getBool();
             }
         }
 
@@ -1297,90 +1078,6 @@ namespace TheOtherRoles
                 highlightAllVents = CustomOptionHolder.baitHighlightAllVents.getBool();
                 reportDelay = CustomOptionHolder.baitReportDelay.getFloat();
 				showKillFlash = CustomOptionHolder.baitShowKillFlash.getBool();
-            }
-        }
-
-        public static class Madmate
-        {
-            public static PlayerControl madmate;
-            public static Color color = Palette.ImpostorRed;
-
-            public static bool canEnterVents = false;
-            public static bool hasImpostorVision = false;
-            public static bool canSabotage = false;
-            public static bool canFixComm = true;
-
-            public static void clearAndReload()
-            {
-                madmate = null;
-                canEnterVents = CustomOptionHolder.madmateCanEnterVents.getBool();
-                hasImpostorVision = CustomOptionHolder.madmateHasImpostorVision.getBool();
-                canSabotage = CustomOptionHolder.madmateCanSabotage.getBool();
-                canFixComm = CustomOptionHolder.madmateCanFixComm.getBool();
-            }
-        }
-
-        public static class GM
-        {
-            public static PlayerControl gm;
-            public static Color color = new Color32(255, 91, 112, byte.MaxValue);
-
-            public static bool gmIsHost = true;
-            public static bool diesAtStart = true;
-            public static bool hasTasks = false;
-            public static bool canSabotage = false;
-            public static bool canWarp = true;
-            public static bool canKill = false;
-
-            private static Sprite zoomInSprite;
-            private static Sprite zoomOutSprite;
-
-            public static Sprite getZoomInSprite()
-            {
-                if (zoomInSprite) return zoomInSprite;
-                zoomInSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.GMZoomIn.png", 115f / 2f);
-                return zoomInSprite;
-            }
-            public static Sprite getZoomOutSprite()
-            {
-                if (zoomOutSprite) return zoomOutSprite;
-                zoomOutSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.GMZoomOut.png", 115f / 2f);
-                return zoomOutSprite;
-            }
-
-            public static void resetZoom()
-            {
-                Camera.main.orthographicSize = 3.0f;
-                HudManager.Instance.UICamera.orthographicSize = 3.0f;
-                HudManager.Instance.transform.localScale = Vector3.one;
-            }
-
-            public static void clearAndReload()
-            {
-                gm = null;
-                gmIsHost = CustomOptionHolder.gmIsHost.getBool();
-                diesAtStart = CustomOptionHolder.gmDiesAtStart.getBool();
-                hasTasks = false;
-                canSabotage = false;
-                zoomInSprite = null;
-                zoomOutSprite = null;
-                canWarp = CustomOptionHolder.gmCanWarp.getBool();
-                canKill = CustomOptionHolder.gmCanKill.getBool();
-
-                foreach (PoolablePlayer p in MapOptions.playerIcons.Values)
-                {
-                    if (p != null && p.gameObject != null) p.gameObject.SetActive(false);
-                }
-            }
-        }
-        public static class Opportunist
-        {
-            public static PlayerControl opportunist;
-            public static Color color = new Color32(0, 255, 00, byte.MaxValue);
-
-            public static void clearAndReload()
-            {
-                opportunist = null;
             }
         }
     }
@@ -1503,6 +1200,7 @@ namespace TheOtherRoles
         public static List<PlayerControl> blankedList = new List<PlayerControl>();
         public static int blanks = 0;
         public static Sprite blank;
+        public static bool notAckedExiled = false;
 
         public static float cooldown = 30f;
         public static int blanksNumber = 5;
@@ -1518,6 +1216,7 @@ namespace TheOtherRoles
             target = null;
             blankedList = new List<PlayerControl>();
             blanks = 0;
+            notAckedExiled = false;
 
             cooldown = CustomOptionHolder.pursuerCooldown.getFloat();
             blanksNumber = Mathf.RoundToInt(CustomOptionHolder.pursuerBlanksNumber.getFloat());

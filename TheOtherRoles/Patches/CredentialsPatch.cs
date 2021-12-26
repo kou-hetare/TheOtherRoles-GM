@@ -12,6 +12,7 @@ namespace TheOtherRoles.Patches {
 
         public static string baseCredentials = $@"<size=130%><color=#ff351f>TheOtherRoles GM</color></size> v{TheOtherRolesPlugin.Version.ToString()}";
 
+
         public static string contributorsCredentials = "<size=80%>GitHub Contributors: Alex2911, amsyarasyiq, gendelo3</size>";
 
         [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
@@ -29,7 +30,7 @@ namespace TheOtherRoles.Patches {
 
                 var version = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(credentials);
                 version.transform.position = new Vector3(0, -0.25f, 0);
-                version.SetText(string.Format(ModTranslation.getString("creditsVersion"), TheOtherRolesPlugin.Version.ToString()));
+                version.SetText(string.Format(ModTranslation.getString("creditsVersion").Replace("v{", "Custom Visor v{"), TheOtherRolesPlugin.Version.ToString()));
 
                 credentials.transform.SetParent(amongUsLogo.transform);
                 version.transform.SetParent(amongUsLogo.transform);

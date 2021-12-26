@@ -1,6 +1,7 @@
 using HarmonyLib;
 using System;
 using static TheOtherRoles.TheOtherRoles;
+using static TheOtherRoles.TheOtherRolesGM;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,6 @@ namespace TheOtherRoles.Patches {
     class IntroCutsceneOnDestroyPatch
     {
         public static void Prefix(IntroCutscene __instance) {
-            // If we failed to assign roles at the start of the game,
-            // try again after the intro cutscene finishes.
-            RPCProcedure.setUnassignedRoles();
-
             // Generate and initialize player icons
             if (PlayerControl.LocalPlayer != null && HudManager.Instance != null)
             {
@@ -23,6 +20,7 @@ namespace TheOtherRoles.Patches {
                     PoolablePlayer player = UnityEngine.Object.Instantiate<PoolablePlayer>(__instance.PlayerPrefab, HudManager.Instance.transform);
                     player.UpdateFromPlayerOutfit(p.Data.DefaultOutfit, p.Data.IsDead);
                     player.SetFlipX(true);
+                    player.PetSlot.gameObject.SetActive(false);
                     player.NameText.text = p.Data.DefaultOutfit.PlayerName;
                     MapOptions.playerIcons[p.PlayerId] = player;
 
@@ -123,7 +121,7 @@ namespace TheOtherRoles.Patches {
 
         public static void setupIntroTeam(IntroCutscene __instance, ref  Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam) {
             List<RoleInfo> infos = RoleInfo.getRoleInfoForPlayer(PlayerControl.LocalPlayer);
-            RoleInfo roleInfo = infos.Where(info => info.roleId != RoleId.Lover).FirstOrDefault();
+            RoleInfo roleInfo = infos.Where(info => info.roleId != RoleId.Lovers).FirstOrDefault();
             if (roleInfo == null) return;
             if (PlayerControl.LocalPlayer.isNeutral() || PlayerControl.LocalPlayer.isGM())
             {
@@ -140,7 +138,7 @@ namespace TheOtherRoles.Patches {
                 if (!CustomOptionHolder.activateRoles.getBool()) return; // Don't override the intro of the vanilla roles
 
                 List<RoleInfo> infos = RoleInfo.getRoleInfoForPlayer(PlayerControl.LocalPlayer);
-                RoleInfo roleInfo = infos.Where(info => info.roleId != RoleId.Lover).FirstOrDefault();
+                RoleInfo roleInfo = infos.Where(info => info.roleId != RoleId.Lovers).FirstOrDefault();
 
                 if (roleInfo != null && roleInfo != RoleInfo.crewmate && roleInfo != RoleInfo.impostor) {
                     __instance.YouAreText.color = roleInfo.color;
@@ -150,8 +148,8 @@ namespace TheOtherRoles.Patches {
                     __instance.RoleBlurbText.color = roleInfo.color;
                 }
 
-                if (infos.Any(info => info.roleId == RoleId.Lover)) {
-                    PlayerControl otherLover = PlayerControl.LocalPlayer == Lovers.lover1 ? Lovers.lover2 : Lovers.lover1;
+                if (infos.Any(info => info.roleId == RoleId.Lovers)) {
+                    PlayerControl otherLover = PlayerControl.LocalPlayer.getPartner();
                 	__instance.RoleBlurbText.text += "\n" + Helpers.cs(Lovers.color, String.Format(ModTranslation.getString("loversFlavor"), otherLover?.Data?.PlayerName ?? ""));
                 } 
             }

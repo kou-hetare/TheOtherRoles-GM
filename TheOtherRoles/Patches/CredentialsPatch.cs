@@ -10,7 +10,7 @@ namespace TheOtherRoles.Patches {
     [HarmonyPatch]
     public static class CredentialsPatch {
 
-        public static string baseCredentials = $@"<size=130%><color=#ff351f>TheOtherRoles GM</color></size> v{TheOtherRolesPlugin.Version.ToString()}";
+        public static string baseCredentials = $@"<size=130%><color=#ff351f>TheOtherRoles GM_CV</color></size> v{TheOtherRolesPlugin.Version.ToString()}";
 
 
         public static string contributorsCredentials = "<size=80%>GitHub Contributors: Alex2911, amsyarasyiq, gendelo3</size>";
@@ -24,7 +24,7 @@ namespace TheOtherRoles.Patches {
 
                 var credentials = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
                 credentials.transform.position = new Vector3(0, 0.15f, 0);
-                credentials.SetText(ModTranslation.getString("creditsMain"));
+                credentials.SetText(ModTranslation.getString("creditsMain")+" CustomVisor：こう。");
                 credentials.alignment = TMPro.TextAlignmentOptions.Center;
                 credentials.fontSize *= 0.75f;
 
@@ -50,7 +50,7 @@ namespace TheOtherRoles.Patches {
                         __instance.transform.localPosition = new Vector3(4.2f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
                     }
                 } else {
-                    __instance.text.text = $"{baseCredentials}\n{ModTranslation.getString("creditsFull")}\n{__instance.text.text}";
+                    __instance.text.text = $"{baseCredentials}\n{ModTranslation.getString("creditsFull").Replace("</color></size>", "</color>\nCustomVisor：こう。</size>")}\n{__instance.text.text}";
                     __instance.transform.localPosition = new Vector3(3.5f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
                 }
             }

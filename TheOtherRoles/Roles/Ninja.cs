@@ -39,6 +39,8 @@ namespace TheOtherRoles
         public override void OnMeetingStart()
         {
             stealthed = false;
+            ninjaButton.isEffectActive = false;
+            ninjaButton.Timer = ninjaButton.MaxTimer = Ninja.stealthCooldown;
         }
 
         public override void OnMeetingEnd()
@@ -57,7 +59,7 @@ namespace TheOtherRoles
 
         public static bool isStealthed(PlayerControl player)
         {
-            if (isRole(player))
+            if (isRole(player) && player.isAlive())
             {
                 Ninja n = players.First(x => x.player == player);
                 return n.stealthed;
@@ -67,7 +69,7 @@ namespace TheOtherRoles
 
         public static float stealthFade(PlayerControl player)
         {
-            if (isRole(player) && fadeTime > 0f)
+            if (isRole(player) && fadeTime > 0f && player.isAlive())
             {
                 Ninja n = players.First(x => x.player == player);
                 return Mathf.Min(1.0f, (float)(DateTime.UtcNow - n.stealthedAt).TotalSeconds / fadeTime);
@@ -77,7 +79,7 @@ namespace TheOtherRoles
 
         public static bool isPenalized(PlayerControl player)
         {
-            if (isRole(player))
+            if (isRole(player) && player.isAlive())
             {
                 Ninja n = players.First(x => x.player == player);
                 return n.penalized;
@@ -95,7 +97,7 @@ namespace TheOtherRoles
             }
         }
 
-        public override void OnKill()
+        public override void OnKill(PlayerControl target)
         {
             penalized = stealthed;
             float penalty = penalized ? killPenalty : 0f;
@@ -213,19 +215,23 @@ namespace TheOtherRoles
                     try
                     {
                         var color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
+
                         if (ninja.MyPhysics?.rend != null)
-                        {
                             ninja.MyPhysics.rend.color = color;
-                        }
                         ninja.MyPhysics?.Skin?.layer?.material?.SetColor("_Color", color);
+
+                        if (ninja.HatRenderer != null)
+                            ninja.HatRenderer.color = color;
                         ninja.HatRenderer?.BackLayer?.material?.SetColor("_Color", color);
                         ninja.HatRenderer?.FrontLayer?.material?.SetColor("_Color", color);
+
+                        if (ninja.CurrentPet != null)
+                            ninja.CurrentPet.Visible = opacity == 1.0 && ninja.isAlive();
                         ninja.CurrentPet?.rend?.material?.SetColor("_Color", color);
                         ninja.CurrentPet?.shadowRend?.material?.SetColor("_Color", color);
+
                         if (ninja.VisorSlot != null)
-                        {
                             ninja.VisorSlot.color = color;
-                        }
                     }
                     catch { }
                 }

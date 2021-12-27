@@ -16,12 +16,12 @@ using TheOtherRoles.Modules;
 
 namespace TheOtherRoles
 {
-    [BepInPlugin(Id, "The Other Roles GM", VersionString)]
+    [BepInPlugin(Id, "The Other Roles GM_CV", VersionString)]
     [BepInProcess("Among Us.exe")]
     public class TheOtherRolesPlugin : BasePlugin
     {
         public const string Id = "me.eisbison.theotherroles";
-        public const string VersionString = "3.2.6";
+        public const string VersionString = "3.3.1";
         public static System.Version Version = System.Version.Parse(VersionString);
         internal static BepInEx.Logging.ManualLogSource Logger;
 
@@ -104,6 +104,7 @@ namespace TheOtherRoles
             __result = false;
         }
     }
+
     [HarmonyPatch(typeof(ChatController), nameof(ChatController.Awake))]
     public static class ChatControllerAwakePatch {
         private static void Prefix() {

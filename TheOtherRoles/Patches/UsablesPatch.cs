@@ -5,6 +5,7 @@ using UnityEngine;
 using static TheOtherRoles.MapOptions;
 using static TheOtherRoles.GameHistory;
 using static TheOtherRoles.TheOtherRoles;
+using static TheOtherRoles.TheOtherRolesGM;
 
 
 namespace TheOtherRoles.Patches
@@ -20,12 +21,12 @@ namespace TheOtherRoles.Patches
             bool isReactor = task.TaskType == TaskTypes.StopCharles || task.TaskType == TaskTypes.ResetSeismic || task.TaskType == TaskTypes.ResetReactor;
             bool isO2 = task.TaskType == TaskTypes.RestoreOxy;
 
-            if (Swapper.swapper != null && pc == Swapper.swapper && (isLights || isComms))
+            if (pc.isRole(RoleId.Swapper) && (isLights || isComms))
             {
                 return true;
             }
 
-            if (Madmate.madmate != null && pc == Madmate.madmate && (isLights || (isComms && !Madmate.canFixComm)))
+            if (pc.isRole(RoleId.Madmate) && (isLights || (isComms && !Madmate.canFixComm)))
             {
                 return true;
             }
@@ -155,7 +156,7 @@ namespace TheOtherRoles.Patches
                 bool canUse;
                 bool couldUse;
                 __instance.CanUse(PlayerControl.LocalPlayer.Data, out canUse, out couldUse);
-                bool canMoveInVents = PlayerControl.LocalPlayer != Spy.spy && Madmate.madmate != PlayerControl.LocalPlayer;
+                bool canMoveInVents = PlayerControl.LocalPlayer != Spy.spy && !PlayerControl.LocalPlayer.isRole(RoleId.Madmate);
                 if (!canUse) return false; // No need to execute the native method as using is disallowed anyways
 
                 bool isEnter = !PlayerControl.LocalPlayer.inVent;
@@ -192,13 +193,19 @@ namespace TheOtherRoles.Patches
             {
                 if (__instance.AmOwner && Helpers.ShowButtons)
                 {
-                    if (__instance.roleCanUseVents())
-                        HudManager.Instance.ImpostorVentButton.Show();
+                    HudManager.Instance.ImpostorVentButton.Hide();
+                    HudManager.Instance.SabotageButton.Hide();
 
-                    if (__instance.roleCanSabotage())
+                    if (Helpers.ShowButtons)
                     {
-                        HudManager.Instance.SabotageButton.Show();
-                        HudManager.Instance.SabotageButton.gameObject.SetActive(true);
+                        if (__instance.roleCanUseVents())
+                            HudManager.Instance.ImpostorVentButton.Show();
+
+                        if (__instance.roleCanSabotage())
+                        {
+                            HudManager.Instance.SabotageButton.Show();
+                            HudManager.Instance.SabotageButton.gameObject.SetActive(true);
+                        }
                     }
                 }
             }
@@ -228,8 +235,14 @@ namespace TheOtherRoles.Patches
             {
                 if (__instance.isActiveAndEnabled && __instance.currentTarget && !__instance.isCoolingDown && !PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.CanMove)
                 {
+                    bool showAnimation = true;
+                    if (PlayerControl.LocalPlayer.isRole(RoleId.Ninja) && Ninja.isStealthed(PlayerControl.LocalPlayer))
+                    {
+                        showAnimation = false;
+                    }
+
                     // Use an unchecked kill command, to allow shorter kill cooldowns etc. without getting kicked
-                    MurderAttemptResult res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, __instance.currentTarget);
+                    MurderAttemptResult res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, __instance.currentTarget, showAnimation: showAnimation);
                     // Handle blank kill
                     if (res == MurderAttemptResult.BlankKill) {
                         PlayerControl.LocalPlayer.killTimer = PlayerControl.GameOptions.KillCooldown;
@@ -242,7 +255,8 @@ namespace TheOtherRoles.Patches
                         else if (PlayerControl.LocalPlayer == Witch.witch)
                             Witch.witch.killTimer = HudManagerStartPatch.witchSpellButton.Timer = HudManagerStartPatch.witchSpellButton.MaxTimer;
                     }
-                        __instance.SetTarget(null);
+
+                    __instance.SetTarget(null);
                 }
                 return false;
             }

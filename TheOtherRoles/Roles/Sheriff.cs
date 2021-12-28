@@ -20,9 +20,9 @@ namespace TheOtherRoles
         public static float cooldown { get { return CustomOptionHolder.sheriffCooldown.getFloat(); } }
         public static int maxShots { get { return (int)CustomOptionHolder.sheriffNumShots.getFloat(); } }
         public static bool canKillNeutrals { get { return CustomOptionHolder.sheriffCanKillNeutrals.getBool(); } }
-        public static bool misfireKillsTarget { get { return CustomOptionHolder.spyCanDieToSheriff.getBool(); } }
-        public static bool spyCanDieToSheriff { get { return CustomOptionHolder.madmateCanDieToSheriff.getBool(); } }
-        public static bool madmateCanDieToSheriff { get { return CustomOptionHolder.sheriffMisfireKillsTarget.getBool(); } }
+        public static bool misfireKillsTarget { get { return CustomOptionHolder.sheriffMisfireKillsTarget.getBool(); } }
+        public static bool spyCanDieToSheriff { get { return CustomOptionHolder.spyCanDieToSheriff.getBool(); } }
+        public static bool madmateCanDieToSheriff { get { return CustomOptionHolder.madmateCanDieToSheriff.getBool(); } }
 
         public int numShots = 2;
         public PlayerControl currentTarget;
@@ -63,7 +63,6 @@ namespace TheOtherRoles
 
                     if (murderAttemptResult == MurderAttemptResult.PerformKill)
                     {
-
                         bool misfire = false;
                         byte targetId = local.currentTarget.PlayerId; ;
                         if ((local.currentTarget.Data.Role.IsImpostor && (local.currentTarget != Mini.mini || Mini.isGrownUp())) ||
@@ -90,7 +89,6 @@ namespace TheOtherRoles
 
                     sheriffKillButton.Timer = sheriffKillButton.MaxTimer;
                     local.currentTarget = null;
-                    local.numShots--;
                 },
                 () => { return PlayerControl.LocalPlayer.isRole(RoleId.Sheriff) && local.numShots > 0 && !PlayerControl.LocalPlayer.Data.IsDead; },
                 () =>

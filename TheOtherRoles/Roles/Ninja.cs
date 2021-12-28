@@ -16,13 +16,13 @@ namespace TheOtherRoles
 
         public static Color color = Palette.ImpostorRed;
 
-        public static float stealthCooldown = 10f;
-        public static float stealthDuration = 10f;
-        public static float killPenalty = 10f;
-        public static float speedBonus = 1.25f;
-        public static float fadeTime = 0.5f;
-        public static bool canUseVents = false;
-        public static bool canBeTargeted = true;
+        public static float stealthCooldown { get { return CustomOptionHolder.ninjaStealthCooldown.getFloat(); } }
+        public static float stealthDuration { get { return CustomOptionHolder.ninjaStealthDuration.getFloat(); } }
+        public static float killPenalty { get { return CustomOptionHolder.ninjaKillPenalty.getFloat(); } }
+        public static float speedBonus { get { return CustomOptionHolder.ninjaSpeedBonus.getFloat() / 100f; } }
+        public static float fadeTime { get { return CustomOptionHolder.ninjaFadeTime.getFloat(); } }
+        public static bool canUseVents { get { return CustomOptionHolder.ninjaCanVent.getBool(); } }
+        public static bool canBeTargeted { get { return CustomOptionHolder.ninjaCanBeTargeted.getBool(); } }
 
         public bool penalized = false;
         public bool stealthed = false;
@@ -104,6 +104,12 @@ namespace TheOtherRoles
             player.SetKillTimerUnchecked(PlayerControl.GameOptions.KillCooldown + penalty);
         }
 
+        public override void OnDeath(PlayerControl killer)
+        {
+            stealthed = false;
+            ninjaButton.isEffectActive = false;
+        }
+
         private static Sprite buttonSprite;
         public static Sprite getButtonSprite()
         {
@@ -175,13 +181,6 @@ namespace TheOtherRoles
         public static void clearAndReload()
         {
             players = new List<Ninja>();
-            stealthCooldown = CustomOptionHolder.ninjaStealthCooldown.getFloat();
-            stealthDuration = CustomOptionHolder.ninjaStealthDuration.getFloat();
-            killPenalty = CustomOptionHolder.ninjaKillPenalty.getFloat();
-            speedBonus = CustomOptionHolder.ninjaSpeedBonus.getFloat() / 100f;
-            fadeTime = CustomOptionHolder.ninjaFadeTime.getFloat();
-            canUseVents = CustomOptionHolder.ninjaCanVent.getBool();
-            canBeTargeted = CustomOptionHolder.ninjaCanBeTargeted.getBool();
         }
 
         [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.FixedUpdate))]
@@ -212,28 +211,27 @@ namespace TheOtherRoles
                     }
 
                     // Sometimes it just doesn't work?
+                    var color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
                     try
                     {
-                        var color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
-
                         if (ninja.MyPhysics?.rend != null)
                             ninja.MyPhysics.rend.color = color;
-                        ninja.MyPhysics?.Skin?.layer?.material?.SetColor("_Color", color);
+
+                        if (ninja.MyPhysics?.Skin?.layer != null)
+                            ninja.MyPhysics.Skin.layer.color = color;
 
                         if (ninja.HatRenderer != null)
                             ninja.HatRenderer.color = color;
-                        ninja.HatRenderer?.BackLayer?.material?.SetColor("_Color", color);
-                        ninja.HatRenderer?.FrontLayer?.material?.SetColor("_Color", color);
 
-                        if (ninja.CurrentPet != null)
-                            ninja.CurrentPet.Visible = opacity == 1.0 && ninja.isAlive();
-                        ninja.CurrentPet?.rend?.material?.SetColor("_Color", color);
-                        ninja.CurrentPet?.shadowRend?.material?.SetColor("_Color", color);
+                        if (ninja.CurrentPet?.rend != null)
+                            ninja.CurrentPet.rend.color = color;
+
+                        if (ninja.CurrentPet?.shadowRend != null)
+                            ninja.CurrentPet.shadowRend.color = color;
 
                         if (ninja.VisorSlot != null)
                             ninja.VisorSlot.color = color;
-                    }
-                    catch { }
+                    } catch { }
                 }
             }
         }

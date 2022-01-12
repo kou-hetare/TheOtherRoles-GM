@@ -230,6 +230,7 @@ namespace TheOtherRoles {
                     player.isRole(RoleId.Arsonist) ||
                     player.isRole(RoleId.Jester) ||
                     player.isRole(RoleId.Opportunist) ||
+                    player.isRole(RoleId.PlagueDoctor) ||
                     player.isRole(RoleId.Vulture) ||
                     player.isRole(RoleId.Lawyer) ||
                     player.isRole(RoleId.Pursuer) ||
@@ -238,7 +239,12 @@ namespace TheOtherRoles {
 
         public static bool isCrew(this PlayerControl player)
         {
-            return player != null && !player.Data.Role.IsImpostor && !player.isNeutral();
+            return player != null && !player.isImpostor() && !player.isNeutral();
+        }
+
+        public static bool isImpostor(this PlayerControl player)
+        {
+            return player != null && player.Data.Role.IsImpostor;
         }
 
         public static bool hasFakeTasks(this PlayerControl player) {

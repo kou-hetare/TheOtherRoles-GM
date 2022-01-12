@@ -9,6 +9,7 @@ using TheOtherRoles.Objects;
 using System.Collections.Generic;
 using System.Linq;
 using TheOtherRoles.Patches;
+using System.Reflection;
 
 namespace TheOtherRoles
 {
@@ -24,6 +25,8 @@ namespace TheOtherRoles
         {
             Ninja.SetButtonCooldowns();
             Sheriff.SetButtonCooldowns();
+            PlagueDoctor.SetButtonCooldowns();
+            Lighter.SetButtonCooldowns();
 
             foreach (CustomButton gmButton in gmButtons)
             {
@@ -42,6 +45,8 @@ namespace TheOtherRoles
         {
             Ninja.MakeButtons(hm);
             Sheriff.MakeButtons(hm);
+            PlagueDoctor.MakeButtons(hm);
+            Lighter.MakeButtons(hm);
 
             gmButtons = new List<CustomButton>();
             gmKillButtons = new List<CustomButton>();

@@ -64,6 +64,7 @@ namespace TheOtherRoles
         Vulture,
         Lawyer,
         Pursuer,
+        PlagueDoctor,
 
 
         GM = 200,
@@ -136,6 +137,9 @@ namespace TheOtherRoles
         UseVitalsTime,
         ArsonistDouse,
         VultureEat,
+        PlagueDoctorWin,
+        PlagueDoctorSetInfected,
+        PlagueDoctorUpdateProgress,
     }
 
     public static class RPCProcedure {
@@ -400,7 +404,7 @@ namespace TheOtherRoles
                         break;
 
                     case RoleId.Lighter:
-                        Lighter.lighter = oldShifter;
+                        Lighter.swapRole(player, oldShifter);
                         break;
 
                     case RoleId.Detective:
@@ -554,6 +558,10 @@ namespace TheOtherRoles
                     case RoleId.Ninja:
                         Ninja.swapRole(player, oldShifter);
                         break;
+
+                    case RoleId.PlagueDoctor:
+                        PlagueDoctor.swapRole(player, oldShifter);
+                        break;
                 }
             }
 
@@ -689,6 +697,7 @@ namespace TheOtherRoles
             // Other roles
             if (player.isRole(RoleId.Jester)) Jester.clearAndReload();
             if (player.isRole(RoleId.Arsonist)) Arsonist.clearAndReload();
+            if (player.isRole(RoleId.PlagueDoctor)) PlagueDoctor.clearAndReload();
             if (Guesser.isGuesser(player.PlayerId)) Guesser.clear(player.PlayerId);
             if (!ignoreLovers && player.isLovers())
             { // The whole Lover couple is being erased
@@ -968,9 +977,16 @@ namespace TheOtherRoles
             if (target == null) return;
             target.MyPhysics.ExitAllVents();
             target.Exiled();
+            GMUpdateMeeting(targetId, true);
+            finalStatuses[target.PlayerId] = FinalStatus.GMExecuted;
 
             PlayerControl partner = target.getPartner(); // Lover check
-            partner?.MyPhysics.ExitAllVents();
+            if (partner != null)
+            {
+                partner?.MyPhysics.ExitAllVents();
+                GMUpdateMeeting(partner.PlayerId, true);
+                finalStatuses[partner.PlayerId] = FinalStatus.GMExecuted;
+            }
 
             if (HudManager.Instance != null && GM.gm != null)
             {
@@ -986,11 +1002,37 @@ namespace TheOtherRoles
             PlayerControl target = Helpers.playerById(targetId);
             if (target == null) return;
             target.Revive();
-            target.getPartner()?.Revive(); // Lover check
+            GMUpdateMeeting(targetId, false);
+            finalStatuses[target.PlayerId] = FinalStatus.Alive;
+
+            PlayerControl partner = target.getPartner(); // Lover check
+            if (partner != null)
+            {
+                partner.Revive();
+                GMUpdateMeeting(partner.PlayerId, false);
+                finalStatuses[partner.PlayerId] = FinalStatus.Alive;
+            }
 
             if (PlayerControl.LocalPlayer.isGM())
             {
                 HudManager.Instance.ShadowQuad.gameObject.SetActive(false);
+            }
+        }
+
+        public static void GMUpdateMeeting(byte targetId, bool dead)
+        {
+            if (MeetingHud.Instance)
+            {
+                foreach (PlayerVoteArea pva in MeetingHud.Instance.playerStates)
+                {
+                    if (pva.TargetPlayerId == targetId)
+                    {
+                        pva.SetDead(pva.DidReport, dead);
+                        pva.Overlay.gameObject.SetActive(dead);
+                    }
+                }
+                if (AmongUsClient.Instance.AmHost)
+                    MeetingHud.Instance.CheckForEndVoting();
             }
         }
 
@@ -1008,7 +1050,25 @@ namespace TheOtherRoles
         {
             MapOptions.restrictVitalsTime -= time;
         }
+
+        public static void plagueDoctorWin() {
+            PlagueDoctor.triggerPlagueDoctorWin = true;
+        }
+
+        public static void plagueDoctorInfected(byte targetId) {
+            var p = Helpers.playerById(targetId);
+            if (!PlagueDoctor.infected.ContainsKey(targetId))
+            {
+                PlagueDoctor.infected[targetId] = p;
+            }
+        }
+
+        public static void plagueDoctorProgress(byte targetId, float progress) {
+			PlagueDoctor.progress[targetId] = progress;
+        }
     }   
+
+    
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
     class RPCHandlerPatch
@@ -1223,6 +1283,18 @@ namespace TheOtherRoles
                     break;
                 case (byte)CustomRPC.UseVitalsTime:
                     RPCProcedure.UseVitalsTime(reader.ReadSingle());
+                    break;
+                case (byte)CustomRPC.PlagueDoctorWin:
+                    RPCProcedure.plagueDoctorWin();
+                    break;
+                case (byte)CustomRPC.PlagueDoctorSetInfected:
+                    RPCProcedure.plagueDoctorInfected(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.PlagueDoctorUpdateProgress:
+					byte progressTarget = reader.ReadByte();
+					byte[] progressByte =  reader.ReadBytes(4);
+					float progress = System.BitConverter.ToSingle(progressByte, 0);
+                    RPCProcedure.plagueDoctorProgress(progressTarget, progress);
                     break;
             }
         }

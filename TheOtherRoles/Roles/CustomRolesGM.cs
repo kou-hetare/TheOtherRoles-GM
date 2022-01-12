@@ -20,6 +20,7 @@ namespace TheOtherRoles
     [HarmonyPatch]
     public static class TheOtherRolesGM
     {
+
         public static void clearAndReloadRoles()
         {
             Morphling.clearAndReload();
@@ -31,15 +32,14 @@ namespace TheOtherRoles
             Opportunist.clearAndReload();
             Ninja.clearAndReload();
             Madmate.clearAndReload();
+            PlagueDoctor.clearAndReload();
+            Lighter.clearAndReload();
             Role.Clear();
         }
 
-        public static void FixedUpdate()
+        public static void FixedUpdate(PlayerControl player)
         {
-            foreach (var role in Role.allRoles)
-            {
-                role.FixedUpdate();
-            }
+            Role.allRoles.DoIf(x => x.player == player, x => x.FixedUpdate());
         }
 
         public static void OnMeetingStart()

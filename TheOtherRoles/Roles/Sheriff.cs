@@ -18,7 +18,7 @@ namespace TheOtherRoles
         public static Color color = new Color32(248, 205, 70, byte.MaxValue);
 
         public static float cooldown { get { return CustomOptionHolder.sheriffCooldown.getFloat(); } }
-        public static int maxShots { get { return (int)CustomOptionHolder.sheriffNumShots.getFloat(); } }
+        public static int maxShots { get { return Mathf.RoundToInt(CustomOptionHolder.sheriffNumShots.getFloat()); } }
         public static bool canKillNeutrals { get { return CustomOptionHolder.sheriffCanKillNeutrals.getBool(); } }
         public static bool misfireKillsTarget { get { return CustomOptionHolder.sheriffMisfireKillsTarget.getBool(); } }
         public static bool spyCanDieToSheriff { get { return CustomOptionHolder.spyCanDieToSheriff.getBool(); } }
@@ -46,6 +46,7 @@ namespace TheOtherRoles
 
         public override void OnKill(PlayerControl target) { }
         public override void OnDeath(PlayerControl killer = null) { }
+        public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason) { }
 
         public static void MakeButtons(HudManager hm) {
 

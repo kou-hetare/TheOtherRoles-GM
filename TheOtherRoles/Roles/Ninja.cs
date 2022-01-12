@@ -57,6 +57,18 @@ namespace TheOtherRoles
             }
         }
 
+        public override void ResetRole()
+        {
+            penalized = false;
+            stealthed = false;
+            setOpacity(player, 1.0f);
+            ninjaButton.isEffectActive = false;
+            ninjaButton.Timer = ninjaButton.MaxTimer = Ninja.stealthCooldown;
+        }
+
+        public override void FixedUpdate() { }
+        public override void HandleDisconnect(PlayerControl player, DisconnectReasons reason) { }
+
         public static bool isStealthed(PlayerControl player)
         {
             if (isRole(player) && player.isAlive())
@@ -183,6 +195,33 @@ namespace TheOtherRoles
             players = new List<Ninja>();
         }
 
+        public static void setOpacity(PlayerControl player, float opacity)
+        {
+            // Sometimes it just doesn't work?
+            var color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
+            try
+            {
+                if (player.MyPhysics?.rend != null)
+                    player.MyPhysics.rend.color = color;
+
+                if (player.MyPhysics?.Skin?.layer != null)
+                    player.MyPhysics.Skin.layer.color = color;
+
+                if (player.HatRenderer != null)
+                    player.HatRenderer.color = color;
+
+                if (player.CurrentPet?.rend != null)
+                    player.CurrentPet.rend.color = color;
+
+                if (player.CurrentPet?.shadowRend != null)
+                    player.CurrentPet.shadowRend.color = color;
+
+                if (player.VisorSlot != null)
+                    player.VisorSlot.color = color;
+            }
+            catch { }
+        }
+
         [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.FixedUpdate))]
         public static class PlayerPhysicsNinjaPatch
         {
@@ -198,7 +237,12 @@ namespace TheOtherRoles
                     var ninja = __instance.myPlayer;
                     if (ninja == null) return;
 
-                    var opacity = (PlayerControl.LocalPlayer.Data.Role.IsImpostor || PlayerControl.LocalPlayer.Data.IsDead) ? 0.1f : 0.0f;
+                    bool canSee = 
+                        PlayerControl.LocalPlayer.isImpostor() ||
+                        PlayerControl.LocalPlayer.isDead() ||
+                        (Lighter.canSeeNinja && PlayerControl.LocalPlayer.isRole(RoleId.Lighter) && Lighter.isLightActive(PlayerControl.LocalPlayer));
+
+                    var opacity = canSee ? 0.1f : 0.0f;
 
                     if (isStealthed(ninja))
                     {
@@ -210,28 +254,7 @@ namespace TheOtherRoles
                         opacity = Math.Max(opacity, stealthFade(ninja));
                     }
 
-                    // Sometimes it just doesn't work?
-                    var color = Color.Lerp(Palette.ClearWhite, Palette.White, opacity);
-                    try
-                    {
-                        if (ninja.MyPhysics?.rend != null)
-                            ninja.MyPhysics.rend.color = color;
-
-                        if (ninja.MyPhysics?.Skin?.layer != null)
-                            ninja.MyPhysics.Skin.layer.color = color;
-
-                        if (ninja.HatRenderer != null)
-                            ninja.HatRenderer.color = color;
-
-                        if (ninja.CurrentPet?.rend != null)
-                            ninja.CurrentPet.rend.color = color;
-
-                        if (ninja.CurrentPet?.shadowRend != null)
-                            ninja.CurrentPet.shadowRend.color = color;
-
-                        if (ninja.VisorSlot != null)
-                            ninja.VisorSlot.color = color;
-                    } catch { }
+                    setOpacity(ninja, opacity);
                 }
             }
         }

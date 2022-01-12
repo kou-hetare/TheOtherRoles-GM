@@ -284,9 +284,10 @@ namespace TheOtherRoles.Patches
         static void sidekickCheckPromotion()
         {
             // If LocalPlayer is Sidekick, the Jackal is disconnected and Sidekick promotion is enabled, then trigger promotion
-            if (Sidekick.sidekick == null || Sidekick.sidekick != PlayerControl.LocalPlayer) return;
-            if (Sidekick.sidekick.Data.IsDead == true || !Sidekick.promotesToJackal) return;
-            if (Jackal.jackal == null || Jackal.jackal?.Data?.Disconnected == true)
+            if (Sidekick.promotesToJackal && 
+                PlayerControl.LocalPlayer.isRole(RoleId.Sidekick) &&
+                PlayerControl.LocalPlayer.isAlive() && 
+                (Jackal.jackal == null || Jackal.jackal.isDead()))
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SidekickPromotes, Hazel.SendOption.Reliable, -1);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -986,7 +987,7 @@ namespace TheOtherRoles.Patches
                 hackerUpdate();
             }
 
-            TheOtherRolesGM.FixedUpdate();
+            TheOtherRolesGM.FixedUpdate(__instance);
         }
     }
 
@@ -1111,9 +1112,6 @@ namespace TheOtherRoles.Patches
             // Remove fake tasks when player dies
             if (target.hasFakeTasks())
                 target.clearAllTasks();
-
-            // Lover suicide trigger on murder
-            Lovers.killLovers(target);
 
             // Sidekick promotion trigger on murder
             if (Sidekick.promotesToJackal && Sidekick.sidekick != null && !Sidekick.sidekick.Data.IsDead && target == Jackal.jackal && Jackal.jackal == PlayerControl.LocalPlayer)
@@ -1291,8 +1289,7 @@ namespace TheOtherRoles.Patches
             if (__instance.hasFakeTasks())
                 __instance.clearAllTasks();
 
-            // Lover suicide trigger on exile
-            Lovers.exileLovers(__instance);
+            __instance.OnDeath(killer: null);
 
             // Sidekick promotion trigger on exile
             if (Sidekick.promotesToJackal && Sidekick.sidekick != null && !Sidekick.sidekick.Data.IsDead && __instance == Jackal.jackal && Jackal.jackal == PlayerControl.LocalPlayer)

@@ -30,7 +30,7 @@ namespace TheOtherRoles
 
         public Ninja()
         {
-            RoleType = roleId = RoleId.Ninja;
+            RoleType = roleId = RoleType.Ninja;
             penalized = false;
             stealthed = false;
             stealthedAt = DateTime.UtcNow;
@@ -50,7 +50,8 @@ namespace TheOtherRoles
                 if (penalized)
                 {
                     player.SetKillTimerUnchecked(PlayerControl.GameOptions.KillCooldown + killPenalty);
-                } else
+                }
+                else
                 {
                     player.SetKillTimer(PlayerControl.GameOptions.KillCooldown);
                 }
@@ -113,7 +114,8 @@ namespace TheOtherRoles
         {
             penalized = stealthed;
             float penalty = penalized ? killPenalty : 0f;
-            player.SetKillTimerUnchecked(PlayerControl.GameOptions.KillCooldown + penalty);
+            if (PlayerControl.LocalPlayer == player)
+                player.SetKillTimerUnchecked(PlayerControl.GameOptions.KillCooldown + penalty);
         }
 
         public override void OnDeath(PlayerControl killer)
@@ -147,7 +149,7 @@ namespace TheOtherRoles
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPCProcedure.ninjaStealth(PlayerControl.LocalPlayer.PlayerId, true);
                 },
-                () => { return PlayerControl.LocalPlayer.isRole(RoleId.Ninja) && !PlayerControl.LocalPlayer.Data.IsDead; },
+                () => { return PlayerControl.LocalPlayer.isRole(RoleType.Ninja) && !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => {
                     if (ninjaButton.isEffectActive)
                     {
@@ -190,7 +192,7 @@ namespace TheOtherRoles
             ninjaButton.MaxTimer = Ninja.stealthCooldown;
         }
 
-        public static void clearAndReload()
+        public static void Clear()
         {
             players = new List<Ninja>();
         }
@@ -235,12 +237,12 @@ namespace TheOtherRoles
                 if (isRole(__instance.myPlayer))
                 {
                     var ninja = __instance.myPlayer;
-                    if (ninja == null) return;
+                    if (ninja == null || ninja.isDead()) return;
 
                     bool canSee = 
                         PlayerControl.LocalPlayer.isImpostor() ||
                         PlayerControl.LocalPlayer.isDead() ||
-                        (Lighter.canSeeNinja && PlayerControl.LocalPlayer.isRole(RoleId.Lighter) && Lighter.isLightActive(PlayerControl.LocalPlayer));
+                        (Lighter.canSeeNinja && PlayerControl.LocalPlayer.isRole(RoleType.Lighter) && Lighter.isLightActive(PlayerControl.LocalPlayer));
 
                     var opacity = canSee ? 0.1f : 0.0f;
 

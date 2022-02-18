@@ -23,7 +23,7 @@ namespace TheOtherRoles.Patches
         ArsonistWin = 14,
         VultureWin = 15,
         LawyerSoloWin = 16,
-        PlagueDoctorWin = 17
+        PlagueDoctorWin = 17,
     }
 
     enum WinCondition
@@ -41,7 +41,9 @@ namespace TheOtherRoles.Patches
         AdditionalLawyerBonusWin,
         AdditionalLawyerStolenWin,
         AdditionalAlivePursuerWin,
-        PlagueDoctorWin
+        PlagueDoctorWin,
+
+        EveryoneDied,
     }
 
     enum FinalStatus
@@ -54,6 +56,9 @@ namespace TheOtherRoles.Patches
         Dead,
         Suicide,
         Misfire,
+        Revenge,
+        Diseased,
+        Divined,
         GMExecuted,
         Disconnected
     }
@@ -103,15 +108,16 @@ namespace TheOtherRoles.Patches
 
             AdditionalTempData.gameOverReason = endGameResult.GameOverReason;
             if ((int)endGameResult.GameOverReason >= 10) endGameResult.GameOverReason = GameOverReason.ImpostorByKill;
+
         }
 
         public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
         {
             var gameOverReason = AdditionalTempData.gameOverReason;
-            var hideRoles = new RoleId[] { RoleId.Lovers };
             AdditionalTempData.clear();
 
             //foreach (var pc in PlayerControl.AllPlayerControls)
+            var hideRoles = new RoleType[] { RoleType.Lovers };
             foreach (var p in GameData.Instance.AllPlayers)
             {
                 //var p = pc.Data;
@@ -140,6 +146,7 @@ namespace TheOtherRoles.Patches
             AdditionalTempData.isGM = CustomOptionHolder.gmEnabled.getBool() && PlayerControl.LocalPlayer.isGM();
             AdditionalTempData.plagueDoctorInfected = PlagueDoctor.infected;
             AdditionalTempData.plagueDoctorProgress = PlagueDoctor.progress;
+
 
             // Remove Jester, Arsonist, Vulture, Jackal, former Jackals and Sidekick from winners (if they win, they'll be readded)
             List<PlayerControl> notWinners = new List<PlayerControl>();
@@ -188,8 +195,9 @@ namespace TheOtherRoles.Patches
             bool vultureWin = Vulture.vulture != null && gameOverReason == (GameOverReason)CustomGameOverReason.VultureWin;
             bool lawyerSoloWin = Lawyer.lawyer != null && gameOverReason == (GameOverReason)CustomGameOverReason.LawyerSoloWin;
             bool plagueDoctorWin = PlagueDoctor.exists && gameOverReason == (GameOverReason)CustomGameOverReason.PlagueDoctorWin;
+            bool everyoneDead = AdditionalTempData.playerRoles.All(x => x.Status != FinalStatus.Alive);
 
-
+            
             // Mini lose
             if (miniLose)
             {
@@ -216,6 +224,23 @@ namespace TheOtherRoles.Patches
                 WinningPlayerData wpd = new WinningPlayerData(Arsonist.arsonist.Data);
                 TempData.winners.Add(wpd);
                 AdditionalTempData.winCondition = WinCondition.ArsonistWin;
+            }
+
+            else if (plagueDoctorWin)
+            {
+                foreach (var pd in PlagueDoctor.players)
+                {
+                    TempData.winners = new Il2CppSystem.Collections.Generic.List<WinningPlayerData>();
+                    WinningPlayerData wpd = new WinningPlayerData(pd.player.Data);
+                    TempData.winners.Add(wpd);
+                    AdditionalTempData.winCondition = WinCondition.PlagueDoctorWin;
+                }
+            }
+
+            else if (everyoneDead)
+            {
+                TempData.winners = new Il2CppSystem.Collections.Generic.List<WinningPlayerData>();
+                AdditionalTempData.winCondition = WinCondition.EveryoneDied;
             }
 
             // Vulture win
@@ -283,17 +308,6 @@ namespace TheOtherRoles.Patches
                 WinningPlayerData wpd = new WinningPlayerData(Lawyer.lawyer.Data);
                 TempData.winners.Add(wpd);
                 AdditionalTempData.winCondition = WinCondition.LawyerSoloWin;
-            }
-
-            else if (plagueDoctorWin)
-            {
-                foreach (var pd in PlagueDoctor.players)
-                {
-                    TempData.winners = new Il2CppSystem.Collections.Generic.List<WinningPlayerData>();
-                    WinningPlayerData wpd = new WinningPlayerData(pd.player.Data);
-                    TempData.winners.Add(wpd);
-                    AdditionalTempData.winCondition = WinCondition.PlagueDoctorWin;
-                }
             }
 
             // Madmate win with impostors
@@ -498,6 +512,12 @@ namespace TheOtherRoles.Patches
                         textRenderer.color = Jackal.color;
                         __instance.BackgroundBar.material.SetColor("_Color", Jackal.color);
                     }
+                    else if (AdditionalTempData.winCondition == WinCondition.EveryoneDied)
+                    {
+                        bonusText = "everyoneDied";
+                        textRenderer.color = Palette.DisabledGrey;
+                        __instance.BackgroundBar.material.SetColor("_Color", Palette.DisabledGrey);
+                    }
                     else if (AdditionalTempData.winCondition == WinCondition.MiniLose)
                     {
                         bonusText = "miniDied";
@@ -569,8 +589,8 @@ namespace TheOtherRoles.Patches
                         {
                             RoleInfo roleX = x.Roles.FirstOrDefault();
                             RoleInfo roleY = y.Roles.FirstOrDefault();
-                            RoleId idX = roleX == null ? RoleId.NoRole : roleX.roleId;
-                            RoleId idY = roleY == null ? RoleId.NoRole : roleY.roleId;
+                            RoleType idX = roleX == null ? RoleType.NoRole : roleX.roleId;
+                            RoleType idY = roleY == null ? RoleType.NoRole : roleY.roleId;
 
                             if (x.Status == y.Status)
                             {
@@ -596,14 +616,10 @@ namespace TheOtherRoles.Patches
                                 {
                                     result += Helpers.cs(Color.red, ModTranslation.getString("plagueDoctorInfectedText"));
                                 }
-                                else 
+                                else if (!data.Roles.Contains(RoleInfo.plagueDoctor))
                                 {
                                     float progress = AdditionalTempData.plagueDoctorProgress.ContainsKey(data.PlayerId) ? AdditionalTempData.plagueDoctorProgress[data.PlayerId] : 0f;
-                                    if (progress > 0f)
-                                    {
-                                        float currProgress = 100 * progress / PlagueDoctor.infectDuration;
-                                        result += $"{currProgress.ToString("F1")}%";
-                                    }
+                                    result += PlagueDoctor.getProgressString(progress);
                                 }
                             }
                             roleSummaryText.AppendLine(result);
@@ -756,6 +772,7 @@ namespace TheOtherRoles.Patches
                         ShipStatus.RpcEndGame(GameOverReason.HumansByTask, false);
                         return true;
                     }
+
                     return false;
                 }
 

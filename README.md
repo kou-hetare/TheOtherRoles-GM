@@ -10,6 +10,8 @@ This fork introduces a number of changes to [The Other Roles](https://github.com
   * [Evil Swapper](#swapper) by [Virtual_Dusk](https://twitter.com/Virtual_Dusk)
   * [Chain-Shifter](#shifter) by [Virtual_Dusk](https://twitter.com/Virtual_Dusk)
   * [Plague Doctor](#plague-doctor) by [haoming37](https://github.com/haoming37)
+  * [Serial Killer](#serial-killer) by [haoming37](https://github.com/haoming37)
+  * [Neko-Kabocha](#neko-kabocha) by [Virtual_Dusk](https://twitter.com/Virtual_Dusk)
 * Pluralized Roles
   * Lovers (up to 7 couples)
   * Sheriff
@@ -43,8 +45,8 @@ Even more roles are coming soon :)
 | [Witch](#witch) | [Spy](#spy) |  |  |
 | [Ninja](#ninja) | [Nice Swapper](#swapper) |  |  |
 | [Evil Swapper](#swapper) | [Time Master](#time-master) |  |  |
-|  |  [Tracker](#tracker) |  |  |
-|  |  [Bait](#bait) |  |  |
+| [Serial Killer](#serial-killer) |  [Tracker](#tracker) |  |  |
+| [Neko-Kabocha](#neko-kabocha) |  [Bait](#bait) |  |  |
 |  |  [Madmate](#madmate)  |  |  |
 |  |  [Medium](#medium) |  |  |
 
@@ -58,6 +60,44 @@ The [Role Assignment](#role-assignment) sections explains how the roles are bein
 # Changelog
 <details>
   <summary>Click to show the Changelog</summary>
+
+**Version 3.4.3**
+- Fixed a bug where "Guesser Is Impostor Chance" crashed the role system
+- Fixed a bug where a sidekicked Hacker was stuck
+- Fixed a bug where a sidekicked Security Guard was stuck
+- Fixed a bug where a disabled Report Button triggered handcuffs
+- Fixed a bug where the Evil Guesser spawn rate was not correct
+- Changed that Cleaner & Vulture exclude each other
+- Changed that the lighter/darker color indicator can be displayed as dead
+
+**Version 3.4.2**
+- Fixed a game breaking bug
+  
+**Version 3.4.2**
+- Fixed a game breaking bug
+  
+**Version 3.4.1**
+- Added a new mod option "Show Lighter/Darker" for meetings
+- Added options for choosing which maps are enabled for random maps thanks [EvilScum](https://github.com/JustASysAdmin)
+- Added Jester option "Jester Has Impostor Vision" thanks [EvilScum](https://github.com/JustASysAdmin)
+- Fixed a bug where the Bounty Hunter had no bounty
+- Fixed a bug where the Guesser & Sheriff were not assigned properly (fingers crossed)
+- Fixed a bug where Hacker buttons didn't work as intended with "random map" option
+- Fixed a bug where the Security Guard could not access cams on Skeld, dlekS & Airship
+- Changed Tracker update intervall to a minimum of 1 thanks [LaicosVK](https://github.com/LaicosVK)
+
+**Version 3.4.0**
+- Added new Role [Deputy](#deputy) thanks [gendelo3](https://github.com/gendelo3)
+- Added Hacker option "Cant Move During Mobile Gadget Duration"
+- Added Security Guard mobile cams after placing all screws
+- Added Lover option "Enable Lover Chat"
+- Added return votes in meetings: You'll now get your votes back if your target got shot by the Guesser
+- Added New Option for Guesser: Guesser can't guess Snitch if they has done all tasks (created by [MaximeGillot](https://github.com/MaximeGillot))
+- Added The Other Roles changelog announcement popup
+- Changed that the Bounty Hunter exclude their Lover
+- Changed the position of the Witch icon in meetings for better visibility
+- Fixed a bug where the spy had a white name for Impostors in chat
+- Fixed a bug where the Guesser and Swapper UI in meetings was behind the visor cosmetics
 
 **Version 3.3.3**
 - Fixed a bug where a guessed Guesser could guess
@@ -507,6 +547,7 @@ The mod adds a few new settings to Among Us (in addition to the role settings):
 - **Dleks:** You are now able to select the Dleks map.
 - **Task Counts:** You are now able to select more tasks.
 - **Role Summary:** When a game ends there will be a list of all players and their roles and their task progress
+- **Darker/Lighter:** Displays color type of each player in meetings
 
 ### Task Count Limits per map
 You can configure:
@@ -704,6 +745,7 @@ The Cleaner is an Impostor who has the ability to clean up dead bodies.\
 \
 **NOTE:**
 - The Kill and Clean cooldown are shared, preventing them from immediately cleaning their own kills.
+- If there is a Cleaner in the game, there can't be a Vulture.
 
 ### Game Options
 | Name | Description |
@@ -738,17 +780,14 @@ The Warlock can still perform normal kills, but the two buttons share the same c
 ## Bounty Hunter
 ### **Team: Impostors**
 \
-Created by [Mallöris](https://github.com/Mallaris)\
-\
 The Bounty Hunter is an Impostor, that continuously get bounties (the targeted player doesn't get notified).\
 The target of the Bounty Hunter swaps after every meeting and after a configurable amount of time.\
 If the Bounty Hunter kills their target, their kill cooldown will be a lot less than usual.\
 Killing a player that's not their current target results in an increased kill cooldown.\
 Depending on the options, there'll be an arrow pointing towards the current target.\
-
 \
 **NOTE:**
-- The target won't be an Impostor or a Spy
+- The target won't be an Impostor, a Spy or the Bounty Hunter's Lover.
 - Killing the target resets the timer and a new target will be selected.
 
 ### Game Options
@@ -802,7 +841,7 @@ Depending on the options you can choose whether voting the Witch out will save a
 **NOTE:**
 - The spellbound players will die before the voted player dies (which might trigger e.g. trigger an Impostor win condition, even if the Witch is the one being voted)
 
-\
+
 ### Game Options
 | Name | Description |
 |----------|:-------------:|
@@ -822,6 +861,18 @@ Original Idea by [うるさくてすみま船](https://twitter.com/nakanocchi2)
 
 The Ninja is an Impostor that can turn invisible. While stealthed, the Ninja moves faster than a normal Crewmate, and kills don't cause them to warp. However, using their stealth ability increases their kill cooldown--a penalty for killing while invisible, and a short penalty applied after unstealthing.
 
+## Serial Killer
+### **Team: Impostors**
+Created by [haoming37](https://github.com/haoming37)
+
+The Serial Killer is an Impostor that has a reduced kill cooldown at the cost of their own life. Once the Serial Killer has their first taste of blood, they must kill again within a set time or be driven crazy by bloodlust and commit suicide.
+
+## Neko-Kabocha
+### **Team: Impostors**
+Created by [Virtual_Dusk](https://twitter.com/Virtual_Dusk)
+
+The Neko-Kabocha is an Impostor capable of taking revenge on their killer. If killed by a Sheriff, Jackal, or other player, the killer will die alongside the Neko-Kabocha.
+
 ## Guesser
 ### **Team: Crewmates or Impostors**
 The Guesser can be a Crewmate or an Impostor (depending on the settings).\
@@ -832,7 +883,7 @@ You can only shoot during the voting time.\
 Depending on the options, the Guesser can't guess the shielded player and depending on the Medic options the Medic/shielded player might be notified (no one will die, independently of what the Guesser guessed).\
 \
 **NOTE:**
-- The vote of a shot player, won't be counted
+- If a player gets shot, you'll get back your votes
 - You can't guess the role **Nice Mini** for obvious reasons
 - You can't guess the role **Lover**, you'll have to guess the primary role of one of the Lovers, to kill both of them
 - Jester wins won't be triggered, if the Guesser shoots the Jester before the Jester gets voted out
@@ -842,12 +893,13 @@ Depending on the options, the Guesser can't guess the shielded player and depend
 |----------|:-------------:|
 | Guesser Spawn Chance | -
 | Chance That The Guesser Is An Impostor | -
-| Guesser Number Of Shots Per Game| -
-| Guesser Can Shoot Multiple Times Per Meeting| -
-| Guesses Visible In Ghost Chat| -
-| Guesses Ignore The Medic Shield| -
-| Evil Guesser Can Guess The Spy| -
-| Both Guesser Spawn Rate| -
+| Guesser Number Of Shots Per Game | -
+| Guesser Can Shoot Multiple Times Per Meeting |  -
+| Guesses Visible In Ghost Chat | -
+| Guesses Ignore The Medic Shield | -
+| Evil Guesser Can Guess The Spy | -
+| Both Guesser Spawn Rate | -
+| Guesser Can't Guess Snitch When Tasks Completed | -
 -----------------------
 
 ## Lovers
@@ -861,6 +913,7 @@ The Lovers never know the role of their partner, they only see who their partner
 The Lovers win if they are both alive when the game ends. \
 If there is no killer among the Lovers (e.g. an Arsonist Lover + Crewmate Lover) and they are both alive when the game ends, they can win together with the Crewmates.\
 If there's a team Impostor/Jackal Lover in the game, the tasks of a Crewmate Lover won't be counted (for a task win) as long as they're alive. If the Lover dies, their tasks will also be counted.\
+You can enable an exclusive chat only for Lovers\
 \
 **NOTE:**
 - In a 2 Cremates vs 2 Impostors (or 2 members of team Jackal) and the Lovers are not in the same team, the game is not automatically over since the Lovers can still achieve a solo win. E.g. if there are the following roles Impostor + ImpLover + Lover + Crewmate left, the game will not end and the next kill will decide if the Impostors or Lovers win.
@@ -875,6 +928,7 @@ If there's a team Impostor/Jackal Lover in the game, the tasks of a Crewmate Lov
 | Lovers Can Have Another Role | If set to true, the Lovers can have a second role
 | Lovers Can Win With Crew | When false, the Lovers are treated as a separate team. (True: original TheOtherRoles behavior.)
 | Lovers Tasks Are Counted | Whether the Lovers' tasks count toward overall task completion.
+| Enable Lover Chat | -
 -----------------------
 
 
@@ -1060,6 +1114,7 @@ Otherwise they see the same information as everyone else.
 **Admin table:** The Hacker can see the colors (or color types) of the players on the table.\
 **Vitals**: The Hacker can see how long dead players have been dead for.\
 The Hacker can access his mobile gadgets (vitals & admin table), with a maximum of charges (uses) and a configurable amount of tasks needed to recharge.\
+While accessing those mobile gadgets, the Hacker is not able to move.\
 \
 **NOTE:**
 - If the Morphling morphs or the Camouflager camouflages, the colors on the admin table change accordingly
@@ -1070,11 +1125,12 @@ The Hacker can access his mobile gadgets (vitals & admin table), with a maximum 
 | Name | Description |
 |----------|:-------------:|
 | Hacker Spawn Chance | -
-| Hacker Cooldown| -
+| Hacker Cooldown | -
 | Hacker Duration | Sets how long the "Hacker mode" remains active
 | Hacker Only Sees Color Type | Sets if the Hacker sees the player colors on the admin table or only white/gray (for Lighter and darker colors)
-| Max Mobile Gadget Charges| -
+| Max Mobile Gadget Charges | -
 | Number Of Tasks Needed For Recharging | Number of tasks to get a charge
+| Can't Move During Cam Duration | -
 -----------------------
 
 
@@ -1166,6 +1222,7 @@ Depending on the options, the Tracker has another ability: They can track all co
 When the Snitch finishes all the tasks, arrows will appear (only visible to the Snitch) that point to the Impostors (depending on the options also to members of team Jackal).
 When the Snitch has one task left (configurable) the Snitch will be revealed to the Impostors (depending on the options also to members of team Jackal) with an arrow pointing to the Snitch.
 
+
 ### Game Options
 | Name | Description
 |----------|:-------------:|
@@ -1173,6 +1230,7 @@ When the Snitch has one task left (configurable) the Snitch will be revealed to 
 | Task Count Where The Snitch Will Be Revealed | -
 | Include Team Jackal | -
 | Use Different Arrow Color For Team Jackal | -
+| Snitch can't be guessed after finishing all their tasks | -
 -----------------------
 
 ## Jackal
@@ -1265,12 +1323,15 @@ The Security Guard is a Crewmate that has a certain number of screws that they c
 Placing a new camera and sealing vents takes a configurable amount of screws. The total number of screws that a Security Guard has can also be configured.\
 The new camera will be visible after the next meeting and accessible by everyone.\
 The vents will be sealed after the next meeting, players can't enter or exit sealed vents, but they can still "move to them" underground.\
+\
 **NOTE:**
-- Trickster boxes can't be sealed
-- The Security Guard can't place Cameras on MiraHQ
-- The remaining number of screws can be seen above their special button
-- On Skeld the four cameras will be replaced every 3 seconds (with the next four cameras). You can also navigate manually using the arrow keys.
 
+- Trickster boxes can't be sealed
+- The Security Guard can't place cameras on MiraHQ
+- The remaining number of screws can be seen above their special button.
+- On Skeld the four cameras will be replaced every 3 seconds (with the next four cameras). You can also navigate manually using the arrow keys
+- Security Guard can access mobile cameras after placing all screws
+- While accessing the mobile cameras, the Security Guard is not able to move
 
 ### Game Options
 | Name | Description
@@ -1280,11 +1341,14 @@ The vents will be sealed after the next meeting, players can't enter or exit sea
 | Security Guard Number Of Screws | The number of screws that a Security Guard can use in a game
 | Number Of Screws Per Cam | The number of screws it takes to place a camera
 | Number Of Screws Per Vent | The number of screws it takes to seal a vent
+| Security Guard Duration | -
+| Gadget Max Charges | -
+| Number Of Tasks Needed For Recharging | -
+| Can't Move During Cam Duration | -
 -----------------------
 
 ## Bait
 ### **Team: Crewmates**
-Created by [Mallöris](https://github.com/Mallaris)
 
 The Bait is a Crewmate that if killed, forces the killer to self report the body (you can configure a delay in the options).
 Additionally, the Bait can see if someone is inside a vent (depending on the options the exact vent gets
@@ -1323,9 +1387,7 @@ The GM role is intended to allow groups to play with a wide variety of rules not
 
 ## Medium
 ### **Team: Crewmates**
-\
-Created by [Mallöris](https://github.com/Mallaris)\
-\
+
 The medium is a crewmate who can ask the souls of dead players for information. Like the Seer, it sees the places where the players have died (after the next meeting) and can question them. It then gets random information about the soul or the killer in the chat. The souls only stay for one round, i.e. until the next meeting. Depending on the options, the souls can only be questioned once and then disappear.
 During the meetings you can see, whether a player wears a darker or a lighter color, represented by (D) or (L) in the names.
 
@@ -1346,12 +1408,11 @@ What is your killers role? (mini exluded)
 
 ## Vulture
 ### **Team: Neutral**
-\
-Created by [Mallöris](https://github.com/Mallaris)\
-\
+
 The Vulture does not have any tasks, they have to win the game as a solo.\
 The Vulture is a neutral role that must eat a specified number of corpses (depending on the options) in order to win.\
 Depending on the options, when a player dies, the Vulture gets an arrow pointing to the corpse.
+If there is a Vulture in the game, there can't be a Cleaner.
 
 ### Game Options
 | Name | Description |

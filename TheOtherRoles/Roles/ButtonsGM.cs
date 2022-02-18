@@ -27,6 +27,7 @@ namespace TheOtherRoles
             Sheriff.SetButtonCooldowns();
             PlagueDoctor.SetButtonCooldowns();
             Lighter.SetButtonCooldowns();
+            SerialKiller.SetButtonCooldowns();
 
             foreach (CustomButton gmButton in gmButtons)
             {
@@ -47,6 +48,7 @@ namespace TheOtherRoles
             Sheriff.MakeButtons(hm);
             PlagueDoctor.MakeButtons(hm);
             Lighter.MakeButtons(hm);
+            SerialKiller.MakeButtons(hm);
 
             gmButtons = new List<CustomButton>();
             gmKillButtons = new List<CustomButton>();
@@ -60,12 +62,12 @@ namespace TheOtherRoles
             {
                 return () =>
                 {
-                    if (!MapOptions.playerIcons.ContainsKey(index))
+                    PlayerControl target = Helpers.playerById(index);
+                    if (!MapOptions.playerIcons.ContainsKey(index) || target.Data.Disconnected)
                     {
                         return;
                     }
 
-                    PlayerControl target = Helpers.playerById(index);
                     if (GM.gm.transform.position != target.transform.position)
                     {
                         GM.gm.transform.position = target.transform.position;
@@ -77,12 +79,12 @@ namespace TheOtherRoles
             {
                 return () =>
                 {
-                    if (!MapOptions.playerIcons.ContainsKey(index))
+                    PlayerControl target = Helpers.playerById(index);
+                    if (!MapOptions.playerIcons.ContainsKey(index) || target.Data.Disconnected)
                     {
                         return;
                     }
 
-                    PlayerControl target = Helpers.playerById(index);
                     if (!target.Data.IsDead)
                     {
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GMKill, Hazel.SendOption.Reliable, -1);
@@ -106,7 +108,8 @@ namespace TheOtherRoles
                 {
                     if ((GM.gm == null || PlayerControl.LocalPlayer != GM.gm) ||
                         (!MapOptions.playerIcons.ContainsKey(index)) ||
-                        (!GM.canWarp))
+                        (!GM.canWarp) ||
+                        (Helpers.playerById(index).Data.Disconnected))
                     {
                         return false;
                     }
@@ -121,7 +124,8 @@ namespace TheOtherRoles
                 {
                     if ((GM.gm == null || PlayerControl.LocalPlayer != GM.gm) ||
                         (!MapOptions.playerIcons.ContainsKey(index)) ||
-                        (!GM.canKill))
+                        (!GM.canKill) ||
+                        (Helpers.playerById(index).Data.Disconnected))
                     {
                         return false;
                     }
